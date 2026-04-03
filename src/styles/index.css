@@ -1,28 +1,31 @@
 :root {
-  /* Primary Palette */
-  --primary-main: #6D28D9;
-  --primary-light: #8B5CF6;
-  --primary-dark: #5B21B6;
+  /* Reference Palette 1 (Sunset/Lavender) */
+  --eminence: #61196E;      /* Primary Deep Purple */
+  --gamboge: #E99E1C;       /* Accent Golden Yellow */
+  --sky-magenta: #BF6BA1;   /* Soft Purple/Pink */
+  --sienna: #852501;        /* Deep Earthy Brown */
+  --apricot: #FDCBB4;       /* Soft Peach */
+
+  /* Reference Palette 2 (Purples) */
+  --platinum: #EDDDEC;      /* Lightest Tint */
+  --african-violet: #A48ECA; /* Secondary Purple */
+  --royal-purple: #7658B2;   /* Vivid Purple */
+  --liberty: #60509D;        /* Deep Blue Purple */
+  --dark-lavender: #6D588B;  /* Muted Deep Purple */
+
+  /* Base Mapping */
+  --primary-main: var(--eminence);
+  --secondary-main: var(--african-violet);
+  --accent-main: var(--gamboge);
   
-  /* Secondary Palette */
-  --secondary-main: #A78BFA;
-  --secondary-light: #C4B5FD;
-  
-  /* Status Colors */
-  --success-main: #10B981;
-  --error-main: #EF4444;
-  --warning-main: #F59E0B;
-  
-  /* Neutral Colors */
-  --bg-default: #F9FAFB;
+  --bg-default: #F3F4F6;
   --bg-paper: #FFFFFF;
   --text-primary: #1F2937;
   --text-secondary: #6B7280;
-  --divider: #F3F4F6;
+  --divider: #EDDDEC;
 
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
   line-height: 1.5;
-  font-weight: 400;
   color: var(--text-primary);
   background-color: var(--bg-default);
 }

@@ -1,0 +1,22 @@
+/* src/styles/tokens.css */
+:root {
+  /* Drug type colours — used in DonutChart and LineBarChart */
+  --drug-cannabis:          #61196E;
+  --drug-amphetamine:       #E99E1C;
+  --drug-methylamphetamine: #7658B2;
+  --drug-ecstasy:           #BF6BA1;
+  --drug-cocaine:           #852501;
+  --drug-other:             #A48ECA;
+  --drug-unknown:           #D1D5DB;
+
+  /* Outcome colours — used in GroupedBarChart and KPICards */
+  --outcome-fines:   #E99E1C;
+  --outcome-arrests: #61196E;
+  --outcome-charges: #BF6BA1;
+
+  /* Chart geometry — used as JS constants in chart components */
+  --chart-margin-top:    20;
+  --chart-margin-right:  24;
+  --chart-margin-bottom: 40;
+  --chart-margin-left:   52;
+}

@@ -1,44 +1,90 @@
 // src/pages/Home.jsx
+//
+// Home page for the COS30045 Drug Driving Visualisation project.
+//
+// Sections (top → bottom):
+//   1. Hero           – headline, sub-copy, CTA to /insights
+//   2. Dashboards     – 3 navigation cards: Overview, Age Group, Location
+//   3. Key Insights   – 3 data-driven findings from the BITRE dataset
+//   4. Start Exploring – quick-jump cards to all major pages
+//   5. Footer credit
+//
 import { Box, Typography, Button, Card, CardContent } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {
-  TrendingUpRounded,
-  MapRounded,
-  PeopleRounded,
   BarChartRounded,
+  PeopleRounded,
+  MapRounded,
   ScienceRounded,
   InfoRounded,
   ArrowForwardRounded,
+  CalendarMonthRounded,
+  LocalPoliceRounded,
+  GrassRounded,
 } from '@mui/icons-material'
 
-const scopeStats = [
-  { value: '7', label: 'Jurisdictions', sub: 'All states & territories' },
-  { value: '24', label: 'Months', sub: 'Jan 2023 – Dec 2024' },
-  { value: '5', label: 'Age Groups', sub: 'From under-16 to 65+' },
-  { value: '3', label: 'Detection Stages', sub: 'Oral fluid to confirmatory' },
-]
-
-const analysisPillars = [
+// ---------------------------------------------------------------------------
+// Data – Dashboard navigation cards
+// Each card links to its own dashboard view.
+// ---------------------------------------------------------------------------
+const dashboardCards = [
   {
-    icon: <TrendingUpRounded />,
-    title: 'Temporal Trends',
-    desc: 'Testing volumes peak in Q2–Q3 each year, aligned with enforcement campaigns. Positive detection rates remain at approximately 3–5% nationally, with short-term spikes around public holidays.',
-    color: '#E99E1C',
-  },
-  {
-    icon: <MapRounded />,
-    title: 'Regional Differences',
-    desc: 'NSW and Victoria lead in total tests, but smaller jurisdictions show comparable positive rates when normalised. Western Australia and Queensland report significant methamphetamine and cannabis detections.',
-    color: '#7658B2',
+    icon: <BarChartRounded />,
+    title: 'Overview',
+    desc: 'Monthly testing trends, drug type distributions, and detection method breakdowns across all jurisdictions for 2023–2024.',
+    path: '/dashboard',
+    accentColor: '#61196E',
+    lightBg: '#F9F0FA',
   },
   {
     icon: <PeopleRounded />,
-    title: 'Demographic Patterns',
-    desc: 'The 17–25 and 26–39 age groups account for the highest proportion of positive results. Cannabis remains the most frequently detected substance, followed by methylamphetamine.',
-    color: '#61196E',
+    title: 'Age Group',
+    desc: 'Enforcement outcomes broken down by age bracket — from under-16 to 65+ — showing which demographics have the highest positive detection rates.',
+    path: '/dashboard#age-group',
+    accentColor: '#7658B2',
+    lightBg: '#F4F1FB',
+  },
+  {
+    icon: <MapRounded />,
+    title: 'Location',
+    desc: 'Positive drug tests per state and territory — compare how NSW, Victoria, Queensland, WA, and other jurisdictions measure up.',
+    path: '/dashboard#jurisdiction',
+    accentColor: '#E99E1C',
+    lightBg: '#FEF8EC',
   },
 ]
 
+// ---------------------------------------------------------------------------
+// Data – Key insights derived from the BITRE 2023–2024 dataset
+// Replace placeholder copy with real findings as analysis deepens.
+// ---------------------------------------------------------------------------
+const keyInsights = [
+  {
+    icon: <CalendarMonthRounded />,
+    title: '2023: First Full National Dataset',
+    desc: 'The 2023 reporting year marked the first time all seven Australian jurisdictions submitted drug driving data simultaneously, giving researchers a complete national picture for the very first time.',
+    accentColor: '#61196E',
+    tag: 'Coverage',
+  },
+  {
+    icon: <GrassRounded />,
+    title: 'Cannabis Leads All Detections',
+    desc: 'Cannabis consistently accounts for the largest share of positive results nationally — with methamphetamine emerging as a significant secondary substance, particularly in Western Australia and Queensland.',
+    accentColor: '#7658B2',
+    tag: 'Substances',
+  },
+  {
+    icon: <LocalPoliceRounded />,
+    title: 'Q2–Q3 Enforcement Peaks',
+    desc: 'Testing volumes spike markedly in Q2 and Q3 each year, coinciding with targeted enforcement campaigns. Positive detection rates remain relatively stable at 3–5%, suggesting consistent underlying demand rather than campaign-driven deterrence.',
+    accentColor: '#E99E1C',
+    tag: 'Trends',
+  },
+]
+
+// ---------------------------------------------------------------------------
+// Data – Quick-jump "Start Exploring" cards (bottom of page)
+// ---------------------------------------------------------------------------
 const explorePages = [
   {
     icon: <BarChartRounded />,
@@ -57,18 +103,22 @@ const explorePages = [
   {
     icon: <InfoRounded />,
     title: 'About the Project',
-    desc: 'Learn about the data source, target audience, project impact, and the team behind this COS30045 Data Visualisation project.',
+    desc: 'Learn about the data source, project impact, and the team behind this COS30045 Data Visualisation project.',
     path: '/about',
     gradient: 'linear-gradient(135deg, #4D1058 0%, #A48ECA 100%)',
   },
 ]
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 function Home() {
   const navigate = useNavigate()
 
   return (
     <Box sx={{ background: '#FAF7FF', minHeight: '100vh' }}>
-      {/* ── Hero ── */}
+
+      {/* ── 1. Hero ── */}
       <Box
         sx={{
           position: 'relative',
@@ -82,7 +132,7 @@ function Home() {
           pb: { xs: 6, md: 10 },
         }}
       >
-        {/* Background accent */}
+        {/* Subtle radial background accents */}
         <Box
           sx={{
             position: 'absolute',
@@ -93,7 +143,17 @@ function Home() {
           }}
         />
 
-        <Box sx={{ position: 'relative', maxWidth: 620, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            maxWidth: 620,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 3,
+          }}
+        >
+          {/* Dataset badge */}
           <Typography
             sx={{
               fontFamily: '"Inter", sans-serif',
@@ -107,6 +167,7 @@ function Home() {
             BITRE · 2023–2024 Dataset
           </Typography>
 
+          {/* Headline */}
           <Box>
             <Typography
               variant="h1"
@@ -114,7 +175,6 @@ function Home() {
                 fontSize: { xs: '2.4rem', sm: '3.2rem', md: '3.8rem' },
                 lineHeight: 1.15,
                 color: '#1F2937',
-                mb: 0,
               }}
             >
               Australia's Drug Driving
@@ -132,6 +192,7 @@ function Home() {
             </Typography>
           </Box>
 
+          {/* Sub-copy */}
           <Typography
             variant="body1"
             sx={{ color: '#6B7280', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: 480 }}
@@ -141,81 +202,145 @@ function Home() {
             data.
           </Typography>
 
+          {/* CTA – redirects to Insights page */}
           <Button
             variant="contained"
             color="primary"
             size="large"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/insights')}
+            endIcon={<ArrowForwardRounded />}
             sx={{ mt: 1, px: 4, py: 1.5, fontSize: '1rem', fontWeight: 700 }}
           >
-            View Dashboard →
+            Explore Insights
           </Button>
         </Box>
       </Box>
 
-      {/* ── Dataset scope strip ── */}
+      {/* ── 2. Dashboard Navigation Cards ── */}
+      {/*
+        Matches reference image: heading + "View All" on the left, then all 3 cards
+        grouped inside one shared rounded block container (light background).
+        Each card inside is white with icon block, title, desc, and arrow link.
+      */}
       <Box sx={{ px: { xs: 2, md: 5 }, pb: { xs: 5, md: 7 }, maxWidth: 1100, mx: 'auto' }}>
+
+        {/* Section heading row */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="body2" sx={{ color: '#61196E', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 0.5 }}>
+              Our Dashboards
+            </Typography>
+            <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, color: '#1F2937', lineHeight: 1.2 }}>
+              Explore the Data
+            </Typography>
+          </Box>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => navigate('/dashboard')}
+            sx={{ borderColor: '#EDDDEC', color: '#61196E', fontWeight: 700, fontSize: '0.8rem', borderRadius: '10px', px: 2.5, whiteSpace: 'nowrap' }}
+          >
+            View All →
+          </Button>
+        </Box>
+
+        {/* Shared group block — all 3 cards live inside this container */}
         <Box
           sx={{
+            bgcolor: '#F3EDF7',
+            borderRadius: '28px',
+            p: { xs: 2, md: 2.5 },
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-            gap: { xs: 2, md: 3 },
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+            gap: { xs: 2, md: 2 },
           }}
         >
-          {scopeStats.map((s) => (
+          {dashboardCards.map((card) => (
             <Box
-              key={s.label}
+              key={card.title}
+              onClick={() => navigate(card.path)}
               sx={{
-                textAlign: 'center',
-                p: { xs: 2.5, md: 3.5 },
+                bgcolor: '#fff',
                 borderRadius: '20px',
-                bgcolor: 'white',
-                border: '1px solid #EDDDEC',
-                transition: 'box-shadow 0.25s ease',
-                '&:hover': { boxShadow: '0 8px 24px rgba(97,25,110,0.08)' },
+                p: { xs: 3, md: 3.5 },
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                transition: 'all 0.25s ease',
+                '&:hover': {
+                  boxShadow: '0 12px 32px rgba(97,25,110,0.10)',
+                  transform: 'translateY(-3px)',
+                },
               }}
             >
-              <Typography
+              {/* Icon block */}
+              <Box
                 sx={{
-                  fontFamily: '"DM Serif Display", serif',
-                  fontSize: { xs: '2.2rem', md: '2.8rem' },
-                  color: '#61196E',
-                  lineHeight: 1,
+                  width: 58,
+                  height: 58,
+                  borderRadius: '16px',
+                  bgcolor: card.lightBg,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: card.accentColor,
+                  '& svg': { fontSize: 30 },
                 }}
               >
-                {s.value}
+                {card.icon}
+              </Box>
+
+              {/* Title */}
+              <Typography variant="h3" sx={{ fontSize: '1.08rem', fontWeight: 700, color: '#1F2937' }}>
+                {card.title}
               </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: '0.85rem', color: '#1F2937', mt: 1 }}>
-                {s.label}
+
+              {/* Description */}
+              <Typography sx={{ color: '#4B5563', fontSize: '0.88rem', lineHeight: 1.7, flexGrow: 1 }}>
+                {card.desc}
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#9CA3AF', mt: 0.25 }}>
-                {s.sub}
-              </Typography>
+
+              {/* Arrow link */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: card.accentColor,
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.03em',
+                }}
+              >
+                Learn More <ArrowForwardRounded sx={{ fontSize: 15 }} />
+              </Box>
             </Box>
           ))}
         </Box>
       </Box>
 
-      {/* ── Analysis pillars ── */}
+      {/* ── 3. Key Insights ── */}
+      {/*
+        Data-driven findings from the BITRE 2023–2024 dataset.
+        Replaces the generic "What the Data Reveals" analysis pillars.
+        Each insight has a tag badge, icon, title, and a short paragraph.
+      */}
       <Box sx={{ px: { xs: 2, md: 5 }, pb: { xs: 5, md: 7 }, maxWidth: 1100, mx: 'auto' }}>
         <Typography
           variant="h2"
-          sx={{
-            fontSize: { xs: '1.6rem', md: '2rem' },
-            color: '#1F2937',
-            mb: 1,
-          }}
+          sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, color: '#1F2937', mb: 1 }}
         >
-          What the Data Reveals
+          What the Data Shows
         </Typography>
         <Typography variant="body2" sx={{ color: '#6B7280', mb: 4, maxWidth: 520 }}>
-          Three lenses into Australia's roadside drug testing enforcement, each uncovering distinct patterns in the BITRE dataset.
+          Three standout findings from the BITRE national drug driving dataset, across 24 months of Australian enforcement records.
         </Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-          {analysisPillars.map((p) => (
+          {keyInsights.map((insight) => (
             <Card
-              key={p.title}
+              key={insight.title}
               sx={{
                 borderRadius: '20px',
                 border: '1px solid #EDDDEC',
@@ -227,29 +352,66 @@ function Home() {
                 },
               }}
             >
-              <CardContent sx={{ p: { xs: 3, md: 4 }, '&:last-child': { pb: { xs: 3, md: 4 } }, display: 'flex', gap: 3, alignItems: { xs: 'flex-start', md: 'center' }, flexDirection: { xs: 'column', md: 'row' } }}>
+              <CardContent
+                sx={{
+                  p: { xs: 3, md: 4 },
+                  '&:last-child': { pb: { xs: 3, md: 4 } },
+                  display: 'flex',
+                  gap: 3,
+                  alignItems: { xs: 'flex-start', md: 'center' },
+                  flexDirection: { xs: 'column', md: 'row' },
+                }}
+              >
+                {/* Icon */}
                 <Box
                   sx={{
                     width: 56,
                     height: 56,
                     minWidth: 56,
                     borderRadius: '16px',
-                    bgcolor: `${p.color}12`,
+                    bgcolor: `${insight.accentColor}12`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: p.color,
+                    color: insight.accentColor,
                     '& svg': { fontSize: 28 },
                   }}
                 >
-                  {p.icon}
+                  {insight.icon}
                 </Box>
-                <Box>
-                  <Typography variant="h3" sx={{ fontSize: '1.15rem', color: '#1F2937', mb: 0.75 }}>
-                    {p.title}
+
+                <Box sx={{ flexGrow: 1 }}>
+                  {/* Tag badge */}
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-block',
+                      px: 1.2,
+                      py: 0.25,
+                      mb: 0.75,
+                      borderRadius: '6px',
+                      bgcolor: `${insight.accentColor}12`,
+                      color: insight.accentColor,
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {insight.tag}
+                  </Box>
+
+                  {/* Title */}
+                  <Typography
+                    variant="h3"
+                    sx={{ fontSize: '1.12rem', color: '#1F2937', mb: 0.75 }}
+                  >
+                    {insight.title}
                   </Typography>
+
+                  {/* Body */}
                   <Typography sx={{ color: '#4B5563', fontSize: '0.92rem', lineHeight: 1.7 }}>
-                    {p.desc}
+                    {insight.desc}
                   </Typography>
                 </Box>
               </CardContent>
@@ -258,15 +420,12 @@ function Home() {
         </Box>
       </Box>
 
-      {/* ── Explore pages ── */}
+      {/* ── 4. Start Exploring ── */}
+      {/* Quick-jump gradient cards to all major pages */}
       <Box sx={{ px: { xs: 2, md: 5 }, pb: { xs: 6, md: 10 }, maxWidth: 1100, mx: 'auto' }}>
         <Typography
           variant="h2"
-          sx={{
-            fontSize: { xs: '1.6rem', md: '2rem' },
-            color: '#1F2937',
-            mb: 1,
-          }}
+          sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, color: '#1F2937', mb: 1 }}
         >
           Start Exploring
         </Typography>
@@ -315,11 +474,23 @@ function Home() {
                 >
                   {page.title}
                 </Typography>
-                <Typography sx={{ fontSize: '0.85rem', lineHeight: 1.65, color: 'rgba(237,221,236,0.85)' }}>
+                <Typography
+                  sx={{ fontSize: '0.85rem', lineHeight: 1.65, color: 'rgba(237,221,236,0.85)' }}
+                >
                   {page.desc}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 2.5, fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.04em' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  mt: 2.5,
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                }}
+              >
                 Explore <ArrowForwardRounded sx={{ fontSize: 16 }} />
               </Box>
             </Box>
@@ -327,18 +498,13 @@ function Home() {
         </Box>
       </Box>
 
-      {/* ── Footer credit ── */}
-      <Box
-        sx={{
-          textAlign: 'center',
-          py: 4,
-          borderTop: '1px solid #EDDDEC',
-        }}
-      >
+      {/* ── 5. Footer credit ── */}
+      <Box sx={{ textAlign: 'center', py: 4, borderTop: '1px solid #EDDDEC' }}>
         <Typography sx={{ fontSize: '0.75rem', color: '#9CA3AF', letterSpacing: '0.06em' }}>
           COS30045 — Data Visualisation 2024 · Group 4 · BITRE Dataset
         </Typography>
       </Box>
+
     </Box>
   )
 }

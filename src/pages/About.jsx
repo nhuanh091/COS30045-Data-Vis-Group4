@@ -15,8 +15,6 @@ import {
   TimelineRounded,
   MapRounded,
   VerifiedRounded,
-  SecurityRounded,
-  SearchRounded,
   PeopleRounded
 } from '@mui/icons-material'
 
@@ -32,27 +30,6 @@ const tools = [
   { name: 'D3.js', color: '#F9A03C' },
   { name: 'MUI', color: '#007FFF' },
   { name: 'Zustand', color: '#433929' },
-]
-
-const audiences = [
-  {
-    title: 'Policymakers & Law Enforcement',
-    desc: 'Evaluate if roadside drug testing operations are effectively targeting high-risk demographics and geographic locations.',
-    icon: <SecurityRounded />,
-    color: '#E99E1C'
-  },
-  {
-    title: 'Researchers & Data Analysts',
-    desc: 'Investigate correlations between detection methods, drug types, and regional enforcement outcomes.',
-    icon: <SearchRounded />,
-    color: '#7658B2'
-  },
-  {
-    title: 'General Public',
-    desc: 'Transparently understand how drug driving enforcement is handled compared to national averages.',
-    icon: <PeopleRounded />,
-    color: '#61196E'
-  }
 ]
 
 const keyTasks = [
@@ -141,35 +118,6 @@ function About() {
             </Typography>
           </CardContent>
         </Card>
-
-        {/* Target Audience */}
-        <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ mb: 3, ml: 1, fontSize: '1.8rem' }}>Target Audience</Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 6 }}>
-          {audiences.map((a) => (
-            <Box
-              key={a.title}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                p: 4,
-                bgcolor: 'white',
-                borderRadius: '24px',
-                border: '1px solid #EDDDEC',
-                transition: 'all 0.3s ease',
-                '&:hover': { boxShadow: '0 15px 40px rgba(97,25,110,0.08)', transform: 'translateX(10px)' }
-              }}
-            >
-              <Avatar sx={{ bgcolor: `${a.color}15`, color: a.color, width: 64, height: 64 }}>
-                {React.cloneElement(a.icon, { sx: { fontSize: 32 } })}
-              </Avatar>
-              <Box>
-                <Typography variant="h5" fontWeight={800} color="#2D1B4E" sx={{ fontSize: '1.4rem' }}>{a.title}</Typography>
-                <Typography variant="body1" color="#6B7280" sx={{ lineHeight: 1.6, fontSize: '1.1rem' }}>{a.desc}</Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
 
         {/* Key Tasks */}
         <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ mb: 3, ml: 1, fontSize: '1.8rem' }}>Key Tasks</Typography>

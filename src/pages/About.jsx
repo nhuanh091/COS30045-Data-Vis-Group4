@@ -200,7 +200,7 @@ function About() {
       </Typography>
       <Grid container spacing={2.5} sx={{ mb: 4 }}>
         {audiences.map((a) => (
-          <Grid item xs={12} md={4} key={a.title}>
+          <Grid size={{ xs: 12, md: 4 }} key={a.title}>
             <Card
               sx={{
                 height: '100%',
@@ -315,7 +315,7 @@ function About() {
                 desc: 'Provide the public with a clear, unbiased narrative of nationwide drug enforcement policies.',
               },
             ].map((item) => (
-              <Grid item xs={12} md={4} key={item.title}>
+              <Grid size={{ xs: 12, md: 4 }} key={item.title}>
                 <Box
                   sx={{
                     p: 2.5,
@@ -341,7 +341,7 @@ function About() {
       {/* Team & Tools Row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Team */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card
             sx={{
               height: '100%',
@@ -397,7 +397,7 @@ function About() {
         </Grid>
 
         {/* Tools */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card
             sx={{
               height: '100%',

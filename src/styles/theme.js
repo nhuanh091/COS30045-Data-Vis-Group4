@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+// Pass 1 — build palette and shape first so we can reference tokens in Pass 2
+const baseTheme = createTheme({
   palette: {
     primary: {
       main: '#61196E', // Eminence (Deep Purple)
@@ -21,7 +22,7 @@ const theme = createTheme({
       contrastText: '#FFFFFF',
     },
     success: {
-      main: '#10B981', 
+      main: '#10B981',
     },
     error: {
       main: '#BF6BA1', // Sky Magenta (using as a soft error/accent)
@@ -50,11 +51,26 @@ const theme = createTheme({
   shape: {
     borderRadius: 16,
   },
+});
+
+// Pass 2 — add typography and components using palette tokens
+const theme = createTheme(baseTheme, {
   typography: {
     fontFamily: '"Inter", sans-serif',
-    h1: { fontWeight: 800, color: '#61196E' },
-    h2: { fontWeight: 800, color: '#61196E' },
-    h3: { fontWeight: 700 },
+    h1: {
+      fontFamily: '"DM Serif Display", serif',
+      fontWeight: 400,
+      color: baseTheme.palette.primary.main,
+    },
+    h2: {
+      fontFamily: '"DM Serif Display", serif',
+      fontWeight: 400,
+      color: baseTheme.palette.text.primary,
+    },
+    h3: {
+      fontFamily: '"DM Serif Display", serif',
+      fontWeight: 400,
+    },
     h4: { fontWeight: 700 },
     h5: { fontWeight: 600 },
     h6: { fontWeight: 600 },

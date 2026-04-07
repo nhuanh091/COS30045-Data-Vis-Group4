@@ -13,8 +13,6 @@ function Layout({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          ml: isMobile ? 0 : `${DRAWER_WIDTH}px`,
-          pr: isMobile ? 0 : { lg: `${DRAWER_WIDTH}px`, md: 4, sm: 0 }, // Balance sidebar width for screen centering
           p: { xs: 2, sm: 3, md: 4 },
           pt: isMobile ? 8 : { xs: 2, sm: 3, md: 4 },
           bgcolor: '#F5F0F7',

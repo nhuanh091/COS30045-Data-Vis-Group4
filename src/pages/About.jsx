@@ -3,11 +3,11 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   Chip,
   Avatar,
   Divider,
 } from '@mui/material'
+import Grid from '@mui/material/Grid2'
 import {
   TrackChangesRounded,
   GroupsRounded,
@@ -357,41 +357,43 @@ function About() {
                   Team — Group 4
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Grid container spacing={1.5}>
                 {team.map((m) => (
-                  <Box
-                    key={m.name}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      p: 2,
-                      bgcolor: '#F5F0F7',
-                      borderRadius: '12px',
-                    }}
-                  >
-                    <Avatar
+                  <Grid size={{ xs: 12, sm: 6 }} key={m.name}>
+                    <Box
                       sx={{
-                        bgcolor: m.color,
-                        fontWeight: 700,
-                        fontSize: '0.85rem',
-                        width: 40,
-                        height: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        p: 1.5,
+                        bgcolor: '#F5F0F7',
+                        borderRadius: '12px',
+                        height: '100%',
                       }}
                     >
-                      {m.avatar}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={700} color="#2D1B4E">
-                        {m.name}
-                      </Typography>
-                      <Typography variant="caption" color="#6B7280">
-                        {m.role}
-                      </Typography>
+                      <Avatar
+                        sx={{
+                          bgcolor: m.color,
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          width: 36,
+                          height: 36,
+                        }}
+                      >
+                        {m.avatar}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={700} color="#2D1B4E" sx={{ fontSize: '0.85rem' }}>
+                          {m.name}
+                        </Typography>
+                        <Typography variant="caption" color="#6B7280">
+                          {m.role}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
+                  </Grid>
                 ))}
-              </Box>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>

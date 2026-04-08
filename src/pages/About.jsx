@@ -89,8 +89,8 @@ function About() {
               variant="h1"
               sx={{
                 fontWeight: 800,
-                fontSize: { xs: '2.5rem', md: '3.6rem' },
-                lineHeight: 1.1,
+                fontSize: { xs: '2.4rem', sm: '3.2rem', md: '3.8rem' },
+                lineHeight: 1.15,
                 mb: 2,
                 background: 'linear-gradient(135deg, #fff 0%, #EDDDEC 100%)',
                 WebkitBackgroundClip: 'text',
@@ -100,7 +100,7 @@ function About() {
             >
               Positive Drug Test Analytics Dashboard
             </Typography>
-            <Typography variant="h6" sx={{ color: 'rgba(237,221,236,0.9)', maxWidth: 1000, fontSize: '1.3rem', fontWeight: 400 }}>
+            <Typography variant="body1" sx={{ color: 'rgba(237,221,236,0.9)', maxWidth: 1000, fontSize: '1.05rem', lineHeight: 1.7, fontWeight: 400 }}>
               An interactive tool uncovering geographic, demographic, and enforcement trends from BITRE's roadside drug testing datasets.
             </Typography>
           </Box>
@@ -111,16 +111,16 @@ function About() {
           <CardContent sx={{ p: 5 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
               <TrackChangesRounded sx={{ color: '#7658B2', fontSize: 36 }} />
-              <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ fontSize: '1.8rem' }}>Why This Dashboard?</Typography>
+              <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Why This Dashboard?</Typography>
             </Box>
-            <Typography variant="h6" color="#4B5563" sx={{ lineHeight: 1.7, fontWeight: 400 }}>
+            <Typography variant="body1" sx={{ color: '#4B5563', lineHeight: 1.7, fontSize: '1.05rem' }}>
               In 2023, BITRE restructured its data collection. This interactive project transforms complex records into actionable visual insights for better policy evaluation and public transparency across Australia.
             </Typography>
           </CardContent>
         </Card>
 
         {/* Key Tasks */}
-        <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ mb: 3, ml: 1, fontSize: '1.8rem' }}>Key Tasks</Typography>
+        <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937', mb: 3, ml: 1 }}>Key Tasks</Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 6 }}>
           {keyTasks.map((t, i) => (
             <Box
@@ -140,7 +140,7 @@ function About() {
               <Avatar sx={{ bgcolor: '#7658B220', color: '#7658B2', width: 56, height: 56 }}>
                 {React.cloneElement(t.icon, { sx: { fontSize: 28 } })}
               </Avatar>
-              <Typography variant="h6" fontWeight={700} color="#374151" sx={{ fontSize: '1.25rem' }}>{t.label}</Typography>
+              <Typography variant="h3" sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1F2937' }}>{t.label}</Typography>
             </Box>
           ))}
         </Box>
@@ -150,7 +150,7 @@ function About() {
           <CardContent sx={{ p: { xs: 5, md: 6 } }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 5 }}>
               <VerifiedRounded sx={{ color: '#E99E1C', fontSize: 44 }} />
-              <Typography variant="h3" fontWeight={800} sx={{ fontSize: '2.2rem' }}>Impact on Decision-Making</Typography>
+              <Typography variant="h2" sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' }, fontWeight: 800, color: '#fff' }}>Impact on Decision-Making</Typography>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               {[
@@ -159,8 +159,8 @@ function About() {
                 { title: 'Transparency', desc: 'Provide the public with a clear, unbiased narrative of nationwide drug enforcement policies.' },
               ].map((item) => (
                 <Box key={item.title} sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <Typography variant="h5" fontWeight={800} color="#E99E1C" sx={{ mb: 1, fontSize: '1.4rem' }}>{item.title}</Typography>
-                  <Typography variant="body1" sx={{ color: 'rgba(237,221,236,0.85)', lineHeight: 1.6, fontSize: '1.1rem' }}>{item.desc}</Typography>
+                  <Typography variant="h3" sx={{ fontSize: '1.15rem', fontWeight: 800, color: '#E99E1C', mb: 1 }}>{item.title}</Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(237,221,236,0.85)', lineHeight: 1.7, fontSize: '0.95rem' }}>{item.desc}</Typography>
                 </Box>
               ))}
             </Box>
@@ -174,15 +174,15 @@ function About() {
               <CardContent sx={{ p: 5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 4 }}>
                   <GroupsRounded sx={{ color: '#7658B2', fontSize: 36 }} />
-                  <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ fontSize: '1.8rem' }}>Team — Group 4</Typography>
+                  <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Team — Group 4</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                   {team.map((m) => (
                     <Box key={m.name} sx={{ display: 'flex', alignItems: 'center', gap: 3, p: 2, bgcolor: '#F5F0F7', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.03)' }}>
                       <Avatar sx={{ bgcolor: m.color, fontWeight: 800, fontSize: '1rem', width: 50, height: 50 }}>{m.avatar}</Avatar>
                       <Box>
-                        <Typography variant="h6" fontWeight={800} color="#2D1B4E" sx={{ fontSize: '1.2rem', lineHeight: 1 }}>{m.name}</Typography>
-                        <Typography variant="body2" color="#6B7280" fontWeight={500}>{m.role}</Typography>
+                        <Typography variant="h3" sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1F2937', mb: 0.5 }}>{m.name}</Typography>
+                        <Typography variant="body2" sx={{ color: '#6B7280', fontSize: '0.85rem' }}>{m.role}</Typography>
                       </Box>
                     </Box>
                   ))}
@@ -195,7 +195,7 @@ function About() {
               <CardContent sx={{ p: 5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 4 }}>
                   <BuildRounded sx={{ color: '#7658B2', fontSize: 36 }} />
-                  <Typography variant="h4" fontWeight={800} color="#2D1B4E" sx={{ fontSize: '1.8rem' }}>Stack</Typography>
+                  <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Stack</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
                   {tools.map((t) => (

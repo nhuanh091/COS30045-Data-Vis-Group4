@@ -1,5 +1,5 @@
 // src/pages/Dashboard.jsx
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { Box, Card, CardContent, Typography, useMediaQuery } from '@mui/material'
 import { useStore } from '../store/useStore'
 import {
@@ -33,6 +33,14 @@ function Dashboard() {
 
   const fmt = (n) => n.toLocaleString()
   const pct = kpis.positiveRate.toFixed(1) + '%'
+
+  // Scroll to a chart section when navigated to with a hash (e.g. /dashboard#jurisdiction)
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) return
+    const el = document.getElementById(hash.slice(1))
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
 
   return (
     <Box sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
@@ -136,7 +144,7 @@ function Dashboard() {
           gap: 2,
         }}
       >
-        <Card sx={{ minWidth: 0 }}>
+        <Card id="jurisdiction" sx={{ minWidth: 0 }}>
           <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
             <Typography variant="h3" sx={{ fontSize: '1.1rem', mb: 0.25 }}>
               By Jurisdiction
@@ -148,7 +156,7 @@ function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card sx={{ minWidth: 0 }}>
+        <Card id="age-group" sx={{ minWidth: 0 }}>
           <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
             <Typography variant="h3" sx={{ fontSize: '1.1rem', mb: 0.25 }}>
               By Age Group

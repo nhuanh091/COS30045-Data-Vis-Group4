@@ -1,82 +1,40 @@
+import React from 'react'
 import {
   Box,
   Typography,
+  Grid2 as Grid,
   Card,
   CardContent,
-  Chip,
   Avatar,
-  Divider,
+  Chip,
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
 import {
   TrackChangesRounded,
   GroupsRounded,
-  PolicyRounded,
-  PublicRounded,
   BuildRounded,
-  VerifiedRounded,
-  TrendingUpRounded,
-  FilterAltRounded,
+  TimelineRounded,
   MapRounded,
+  VerifiedRounded,
+  PeopleRounded
 } from '@mui/icons-material'
 
-// Team Members 
 const team = [
-  {
-    name: 'Nam Anh',
-    role: 'Team Member',
-    avatar: 'NA',
-    color: '#7658B2',
-  },
-  {
-    name: 'Như Anh',
-    role: 'Leader',
-    avatar: 'NA',
-    color: '#A48ECA',
-  },
-  {
-    name: 'Tùng Dương',
-    role: 'Team Member',
-    avatar: 'TD',
-    color: '#60509D',
-  },
+  { name: 'Nam Anh', role: 'Team Member', avatar: 'NA', color: '#7658B2' },
+  { name: 'Như Anh', role: 'Leader', avatar: 'NA', color: '#61196E' },
+  { name: 'Tùng Dương', role: 'Team Member', avatar: 'TD', color: '#2D1B4E' },
 ]
 
-// Tech Stack 
 const tools = [
   { name: 'React', color: '#61DAFB' },
   { name: 'Vite', color: '#646CFF' },
-  { name: 'D3.js', color: '#E99E1C' },
-  { name: 'MUI', color: '#7658B2' },
-  { name: 'Zustand', color: '#60509D' },
+  { name: 'D3.js', color: '#F9A03C' },
+  { name: 'MUI', color: '#007FFF' },
+  { name: 'Zustand', color: '#433929' },
 ]
 
-// Target Audiences 
-const audiences = [
-  {
-    icon: <PolicyRounded />,
-    title: 'Policymakers & Law Enforcement',
-    desc: 'Evaluate whether roadside drug testing effectively targets high-risk demographics and locations.',
-    color: '#61196E',
-  },
-  {
-    icon: <TrendingUpRounded />,
-    title: 'Researchers & Analysts',
-    desc: 'Investigate correlations between detection methods, drug types, and regional enforcement outcomes.',
-    color: '#7658B2',
-  },
-  {
-    icon: <PublicRounded />,
-    title: 'General Public',
-    desc: 'Transparently understand drug driving enforcement across states and territories.',
-    color: '#A48ECA',
-  },
-]
-
-// Key Tasks 
 const keyTasks = [
-  { icon: <FilterAltRounded />, label: 'Filter & Drill Down by jurisdiction, month, and testing stage' },
-  { icon: <GroupsRounded />, label: 'Compare demographics across age groups and enforcement outcomes' },
+  { icon: <TimelineRounded />, label: 'Filter & Drill Down by jurisdiction, month, and testing stage' },
+  { icon: <PeopleRounded />, label: 'Compare demographics across age groups and enforcement outcomes' },
   { icon: <MapRounded />, label: 'Track geospatial trends and identify hotspots across regions' },
 ]
 
@@ -85,366 +43,169 @@ function About() {
     <Box 
       sx={{ 
         width: '100%', 
-        pl: { lg: '260px', md: 0 }, 
-        pr: { lg: '260px', md: 0 }, 
+        // Shifting right by using more balanced padding to center in the visual workspace
+        // Previous (pl: 30, pr: 290) was too far left. 
+        // Balanced (pl: 160, pr: 160) centers it relative to the white area.
+        pl: { lg: '160px', md: '40px', xs: '16px' }, 
+        pr: { lg: '160px', md: '40px', xs: '16px' }, 
         display: 'flex', 
         justifyContent: 'center',
-        pb: 6
+        pb: 10,
+        pt: 4
       }}
     >
-      <Box sx={{ maxWidth: 1100, width: '100%', px: { xs: 2, md: 0 } }}>
-      {/* Hero Section */}
-      <Box
-        sx={{
-          position: 'relative',
-          borderRadius: '24px',
-          overflow: 'hidden',
-          mb: 4,
-          background: 'linear-gradient(135deg, #2D1B4E 0%, #61196E 50%, #7658B2 100%)',
-          p: { xs: 4, md: 6 },
-          color: '#fff',
-        }}
-      >
-        {/* Decorative circles */}
+      <Box sx={{ maxWidth: 1600, width: '100%', px: { xs: 2.5, md: 5 } }}>
+        {/* Hero Section */}
         <Box
           sx={{
-            position: 'absolute',
-            top: -60,
-            right: -60,
-            width: 200,
-            height: 200,
-            borderRadius: '50%',
-            bgcolor: 'rgba(164,142,202,0.12)',
+            position: 'relative',
+            borderRadius: '32px',
+            overflow: 'hidden',
+            mb: 5,
+            background: 'linear-gradient(135deg, #2D1B4E 0%, #61196E 50%, #7658B2 100%)',
+            p: { xs: 5, md: 7 },
+            color: '#fff',
+            boxShadow: '0 20px 50px rgba(45,27,78,0.2)'
           }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: -40,
-            left: -40,
-            width: 150,
-            height: 150,
-            borderRadius: '50%',
-            bgcolor: 'rgba(233,158,28,0.1)',
-          }}
-        />
-
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Chip
-            label="COS30045 — Data Visualisation"
-            size="small"
+        >
+          <Box
             sx={{
-              bgcolor: 'rgba(255,255,255,0.12)',
-              color: '#EDDDEC',
-              fontWeight: 600,
-              fontSize: '0.7rem',
-              mb: 2,
-              backdropFilter: 'blur(8px)',
+              position: 'absolute',
+              top: -60,
+              right: -60,
+              width: 350,
+              height: 350,
+              borderRadius: '50%',
+              bgcolor: 'rgba(164,142,202,0.15)',
             }}
           />
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: 800,
-              fontSize: { xs: '1.8rem', md: '2.5rem' },
-              lineHeight: 1.15,
-              mb: 1.5,
-              background: 'linear-gradient(135deg, #fff 0%, #EDDDEC 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Positive Drug Test
-            <br />
-            Analytics Dashboard
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: 'rgba(237,221,236,0.7)',
-              maxWidth: 600,
-              fontSize: '0.95rem',
-              lineHeight: 1.7,
-            }}
-          >
-            An interactive tool visualising BITRE's roadside drug testing data across
-            Australia — uncovering geographic, demographic, and enforcement trends from
-            the restructured 2023 dataset.
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Why This Dashboard */}
-      <Card
-        sx={{
-          mb: 4,
-          background: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid #EDDDEC',
-        }}
-      >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-            <TrackChangesRounded sx={{ color: '#7658B2', fontSize: 28 }} />
-            <Typography variant="h6" fontWeight={700} color="#2D1B4E">
-              Why This Dashboard?
-            </Typography>
-          </Box>
-          <Typography
-            variant="body2"
-            sx={{ color: '#4B5563', lineHeight: 1.8, maxWidth: 800 }}
-          >
-            In 2023, BITRE restructured its data collection — introducing monthly
-            tracking, age-group breakdowns by remoteness area, and severity-level
-            enforcement outcomes (charges vs. arrests). Existing static reports fail to
-            capture this new depth. This project fills that gap with a targeted,
-            interactive tool that transforms complex tabular data into actionable visual
-            insights for better decision-making.
-          </Typography>
-        </CardContent>
-      </Card>
-
-      {/* Target Audience */}
-      <Typography variant="h6" fontWeight={700} color="#2D1B4E" sx={{ mb: 2 }}>
-        Target Audience
-      </Typography>
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        {audiences.map((a) => (
-          <Grid size={{ xs: 12, md: 4 }} key={a.title}>
-            <Card
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Chip
+              label="COS30045 — Data Visualisation"
+              size="medium"
+              sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: '#EDDDEC', fontWeight: 700, mb: 3, fontSize: '0.9rem' }}
+            />
+            <Typography
+              variant="h1"
               sx={{
-                height: '100%',
-                background: 'rgba(255,255,255,0.85)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid #EDDDEC',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 40px rgba(97,25,110,0.1)',
-                },
+                fontWeight: 800,
+                fontSize: { xs: '2.4rem', sm: '3.2rem', md: '3.8rem' },
+                lineHeight: 1.15,
+                mb: 2,
+                background: 'linear-gradient(135deg, #fff 0%, #EDDDEC 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontFamily: '"DM Serif Display", serif',
               }}
             >
-              <CardContent sx={{ p: 3 }}>
-                <Avatar
-                  sx={{
-                    bgcolor: `${a.color}15`,
-                    color: a.color,
-                    width: 44,
-                    height: 44,
-                    mb: 2,
-                  }}
-                >
-                  {a.icon}
-                </Avatar>
-                <Typography variant="subtitle1" fontWeight={700} color="#2D1B4E" gutterBottom>
-                  {a.title}
-                </Typography>
-                <Typography variant="body2" color="#6B7280" sx={{ lineHeight: 1.7 }}>
-                  {a.desc}
-                </Typography>
+              Positive Drug Test Analytics Dashboard
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(237,221,236,0.9)', maxWidth: 1000, fontSize: '1.05rem', lineHeight: 1.7, fontWeight: 400 }}>
+              An interactive tool uncovering geographic, demographic, and enforcement trends from BITRE's roadside drug testing datasets.
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Why This Dashboard */}
+        <Card sx={{ mb: 5, borderRadius: '24px', border: '1px solid #EDDDEC', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+          <CardContent sx={{ p: 5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+              <TrackChangesRounded sx={{ color: '#7658B2', fontSize: 36 }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Why This Dashboard?</Typography>
+            </Box>
+            <Typography variant="body1" sx={{ color: '#4B5563', lineHeight: 1.7, fontSize: '1.05rem' }}>
+              In 2023, BITRE restructured its data collection. This interactive project transforms complex records into actionable visual insights for better policy evaluation and public transparency across Australia.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Key Tasks */}
+        <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937', mb: 3, ml: 1 }}>Key Tasks</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 6 }}>
+          {keyTasks.map((t, i) => (
+            <Box
+              key={i}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 3,
+                p: 3.5,
+                bgcolor: '#F5F0F7',
+                borderRadius: '20px',
+                border: '1px solid rgba(118,88,178,0.1)',
+                transition: 'all 0.2s ease',
+                '&:hover': { bgcolor: '#EFEEF5' }
+              }}
+            >
+              <Avatar sx={{ bgcolor: '#7658B220', color: '#7658B2', width: 56, height: 56 }}>
+                {React.cloneElement(t.icon, { sx: { fontSize: 28 } })}
+              </Avatar>
+              <Typography variant="h3" sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1F2937' }}>{t.label}</Typography>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Impact Section */}
+        <Card sx={{ mb: 6, borderRadius: '32px', background: 'linear-gradient(135deg, #2D1B4E 0%, #61196E 100%)', border: 'none', color: '#fff', boxShadow: '0 20px 50px rgba(45,27,78,0.2)' }}>
+          <CardContent sx={{ p: { xs: 5, md: 6 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 5 }}>
+              <VerifiedRounded sx={{ color: '#E99E1C', fontSize: 44 }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' }, fontWeight: 800, color: '#fff' }}>Impact on Decision-Making</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {[
+                { title: 'Resource Allocation', desc: 'Deploy testing units efficiently using geographic and temporal hotspot data.' },
+                { title: 'Public Safety Campaigns', desc: 'Design demographic-specific educational campaigns based on dominant at-risk age groups.' },
+                { title: 'Transparency', desc: 'Provide the public with a clear, unbiased narrative of nationwide drug enforcement policies.' },
+              ].map((item) => (
+                <Box key={item.title} sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <Typography variant="h3" sx={{ fontSize: '1.15rem', fontWeight: 800, color: '#E99E1C', mb: 1 }}>{item.title}</Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(237,221,236,0.85)', lineHeight: 1.7, fontSize: '0.95rem' }}>{item.desc}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Team & Tools Row */}
+        <Grid container spacing={4}>
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Card sx={{ height: '100%', borderRadius: '24px', background: 'white', border: '1px solid #EDDDEC' }}>
+              <CardContent sx={{ p: 5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 4 }}>
+                  <GroupsRounded sx={{ color: '#7658B2', fontSize: 36 }} />
+                  <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Team — Group 4</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                  {team.map((m) => (
+                    <Box key={m.name} sx={{ display: 'flex', alignItems: 'center', gap: 3, p: 2, bgcolor: '#F5F0F7', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.03)' }}>
+                      <Avatar sx={{ bgcolor: m.color, fontWeight: 800, fontSize: '1rem', width: 50, height: 50 }}>{m.avatar}</Avatar>
+                      <Box>
+                        <Typography variant="h3" sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1F2937', mb: 0.5 }}>{m.name}</Typography>
+                        <Typography variant="body2" sx={{ color: '#6B7280', fontSize: '0.85rem' }}>{m.role}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
               </CardContent>
             </Card>
           </Grid>
-        ))}
-      </Grid>
-
-      {/* Key Tasks */}
-      <Card
-        sx={{
-          mb: 4,
-          background: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid #EDDDEC',
-        }}
-      >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-          <Typography variant="h6" fontWeight={700} color="#2D1B4E" sx={{ mb: 2.5 }}>
-            Key Tasks Users Can Perform
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {keyTasks.map((t, i) => (
-              <Box
-                key={i}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  p: 2,
-                  bgcolor: '#F5F0F7',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(118,88,178,0.08)',
-                }}
-              >
-                <Avatar
-                  sx={{
-                    bgcolor: '#7658B215',
-                    color: '#7658B2',
-                    width: 38,
-                    height: 38,
-                  }}
-                >
-                  {t.icon}
-                </Avatar>
-                <Typography variant="body2" fontWeight={500} color="#374151">
-                  {t.label}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Impact */}
-      <Card
-        sx={{
-          mb: 4,
-          background: 'linear-gradient(135deg, #2D1B4E 0%, #61196E 100%)',
-          color: '#fff',
-          border: 'none',
-        }}
-      >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-            <VerifiedRounded sx={{ color: '#E99E1C' }} />
-            <Typography variant="h6" fontWeight={700}>
-              Impact on Decision-Making
-            </Typography>
-          </Box>
-          <Grid container spacing={3}>
-            {[
-              {
-                title: 'Resource Allocation',
-                desc: 'Deploy testing units efficiently using regional and temporal hotspot data.',
-              },
-              {
-                title: 'Public Safety Campaigns',
-                desc: 'Design demographic-specific educational campaigns based on dominant at-risk age groups.',
-              },
-              {
-                title: 'Transparency',
-                desc: 'Provide the public with a clear, unbiased narrative of nationwide drug enforcement policies.',
-              },
-            ].map((item) => (
-              <Grid size={{ xs: 12, md: 4 }} key={item.title}>
-                <Box
-                  sx={{
-                    p: 2.5,
-                    borderRadius: '14px',
-                    bgcolor: 'rgba(255,255,255,0.08)',
-                    backdropFilter: 'blur(8px)',
-                    height: '100%',
-                  }}
-                >
-                  <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1, color: '#E99E1C' }}>
-                    {item.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(237,221,236,0.7)', lineHeight: 1.7 }}>
-                    {item.desc}
-                  </Typography>
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Card sx={{ height: '100%', borderRadius: '24px', background: 'white', border: '1px solid #EDDDEC' }}>
+              <CardContent sx={{ p: 5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 4 }}>
+                  <BuildRounded sx={{ color: '#7658B2', fontSize: 36 }} />
+                  <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#1F2937' }}>Stack</Typography>
                 </Box>
-              </Grid>
-            ))}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                  {tools.map((t) => (
+                    <Chip key={t.name} label={t.name} size="medium" sx={{ bgcolor: `${t.color}15`, color: t.color, fontSize: '1rem', fontWeight: 800, px: 1, height: '44px', borderRadius: '12px' }} />
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
           </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Team & Tools Row */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Team */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card
-            sx={{
-              height: '100%',
-              background: 'rgba(255,255,255,0.85)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid #EDDDEC',
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
-                <GroupsRounded sx={{ color: '#7658B2' }} />
-                <Typography variant="h6" fontWeight={700} color="#2D1B4E">
-                  Team — Group 4
-                </Typography>
-              </Box>
-              <Grid container spacing={1.5}>
-                {team.map((m) => (
-                  <Grid size={{ xs: 12, sm: 6 }} key={m.name}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        p: 1.5,
-                        bgcolor: '#F5F0F7',
-                        borderRadius: '12px',
-                        height: '100%',
-                      }}
-                    >
-                      <Avatar
-                        sx={{
-                          bgcolor: m.color,
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          width: 36,
-                          height: 36,
-                        }}
-                      >
-                        {m.avatar}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={700} color="#2D1B4E" sx={{ fontSize: '0.85rem' }}>
-                          {m.name}
-                        </Typography>
-                        <Typography variant="caption" color="#6B7280">
-                          {m.role}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </CardContent>
-          </Card>
         </Grid>
-
-        {/* Tools */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card
-            sx={{
-              height: '100%',
-              background: 'rgba(255,255,255,0.85)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid #EDDDEC',
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
-                <BuildRounded sx={{ color: '#7658B2' }} />
-                <Typography variant="h6" fontWeight={700} color="#2D1B4E">
-                  Tech Stack
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-                {tools.map((t) => (
-                  <Chip
-                    key={t.name}
-                    label={t.name}
-                    sx={{
-                      bgcolor: `${t.color}15`,
-                      color: t.color,
-                      fontWeight: 700,
-                      fontSize: '0.8rem',
-                      px: 1,
-                      border: `1px solid ${t.color}30`,
-                    }}
-                  />
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
       </Box>
     </Box>
   )

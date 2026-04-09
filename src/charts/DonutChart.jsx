@@ -26,6 +26,13 @@ function DonutChart({ data = [], colors = [], title = '' }) {
   useEffect(() => {
     if (!data || data.length === 0 || width === 0) return
 
+    // Validate and filter data to ensure all values are valid numbers
+    const validData = data.filter(d => 
+      d && typeof d.value === 'number' && !isNaN(d.value) && d.value > 0
+    )
+
+    if (validData.length === 0) return
+
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
 
@@ -37,7 +44,7 @@ function DonutChart({ data = [], colors = [], title = '' }) {
 
     svg.attr('width', size).attr('height', size)
 
-    const total = d3.sum(data, (d) => d.value)
+    const total = d3.sum(validData, (d) => d.value)
     const pie = d3.pie().value((d) => d.value).sort(null)
     const arc = d3.arc().innerRadius(innerR).outerRadius(outerR).cornerRadius(3)
     const arcHover = d3.arc().innerRadius(innerR).outerRadius(outerR + 4).cornerRadius(3)
@@ -50,7 +57,7 @@ function DonutChart({ data = [], colors = [], title = '' }) {
 
     const paths = g
       .selectAll('path')
-      .data(pie(data))
+      .data(pie(validData))
       .join('path')
       .attr('fill', (_, i) => colorFn(i))
       .attr('stroke', 'white')
@@ -75,8 +82,8 @@ function DonutChart({ data = [], colors = [], title = '' }) {
       })
 
     // Centre label — dominant segment
-    if (data.length > 0) {
-      const topPct = ((data[0].value / total) * 100).toFixed(0)
+    if (validData.length > 0) {
+      const topPct = ((validData[0].value / total) * 100).toFixed(0)
       g.append('text')
         .attr('text-anchor', 'middle')
         .attr('dy', '-0.2em')
@@ -91,7 +98,7 @@ function DonutChart({ data = [], colors = [], title = '' }) {
         .style('font-size', `${Math.max(8, innerR * 0.22)}px`)
         .style('font-family', 'Inter, sans-serif')
         .style('fill', '#9CA3AF')
-        .text(data[0].label)
+        .text(validData[0].label)
     }
   }, [data, colors, width])
 

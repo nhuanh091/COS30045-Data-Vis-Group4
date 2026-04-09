@@ -1,24 +1,36 @@
-// src/charts/GroupedBarChart.jsx
+// src/charts/StackedBarChart.jsx
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
 
-const MARGIN = { top: 24, right: 24, bottom: 44, left: 52 }
-const GROUPS = ['fines', 'charges']
-const GROUP_COLORS = { fines: '#E99E1C', charges: '#BF6BA1' }
-const GROUP_LABELS = { fines: 'Fines', charges: 'Charges' }
-const HEIGHT = 260
+const MARGIN = { top: 20, right: 60, bottom: 44, left: 60 }
+const DEFAULT_COLORS = ['#E99E1C', '#61196E']
+const HEIGHT = 300
 
 /**
- * Grouped bar chart — enforcement outcomes (fines/arrests/charges) by age group.
+ * Reusable stacked bar chart — displays grouped data with stacked segments.
+ * Bars are vertical by default, with stacking along the y-axis.
  *
- * @param {Array}    data    - [{ ageGroup, fines, arrests, charges }]
- * @param {function} onReset - called when "Reset filters" is clicked in empty state
+ * @param {Array}    data        - Array of objects with grouping field and stack fields
+ * @param {string}   groupField  - Field name to group by (e.g., 'detectionMethod')
+ * @param {Array}    stackFields - Array of field names to stack (e.g., ['best', 'notBest'])
+ * @param {Array}    stackLabels - Array of display labels for each stack (e.g., ['Best', 'Not Best'])
+ * @param {Array}    colors      - Optional color array for each segment (overrides defaults)
+ * @param {function} onReset     - called when "Reset filters" is clicked in empty state
  */
-function GroupedBarChart({ data = [], onReset }) {
+function StackedBarChart({
+  data = [],
+  groupField = 'detectionMethod',
+  stackFields = ['best', 'notBest'],
+  stackLabels = ['Best', 'Not Best'],
+  colors = [],
+  onReset,
+}) {
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
+
+  const chartColors = colors.length > 0 ? colors : DEFAULT_COLORS
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -41,18 +53,29 @@ function GroupedBarChart({ data = [], onReset }) {
 
     const g = svg.append('g').attr('transform', `translate(${MARGIN.left},${MARGIN.top})`)
 
-    const x0 = d3.scaleBand()
-      .domain(data.map((d) => d.ageGroup))
+    // Compute stacked totals
+    const stackedData = data.map((d) => {
+      let y0 = 0
+      const stacks = stackFields.map((field, i) => {
+        const y1 = y0 + (Number(d[field]) || 0)
+        const stack = { field, label: stackLabels[i], y0, y1, value: d[field], group: d[groupField] }
+        y0 = y1
+        return stack
+      })
+      return { group: d[groupField], total: y0, stacks }
+    })
+
+    const yMax = d3.max(stackedData, (d) => d.total) * 1.15
+
+    const x = d3.scaleBand()
+      .domain(stackedData.map((d) => d.group))
       .range([0, innerW])
-      .paddingInner(0.25)
+      .padding(0.25)
 
-    const x1 = d3.scaleBand()
-      .domain(GROUPS)
-      .range([0, x0.bandwidth()])
-      .padding(0.1)
-
-    const yMax = d3.max(data, (d) => Math.max(d.fines, d.charges)) * 1.2
-    const y = d3.scaleLinear().domain([0, yMax]).nice().range([innerH, 0])
+    const y = d3.scaleLinear()
+      .domain([0, yMax])
+      .nice()
+      .range([innerH, 0])
 
     // Gridlines
     g.append('g')
@@ -65,25 +88,26 @@ function GroupedBarChart({ data = [], onReset }) {
 
     const tooltipEl = d3.select(containerRef.current).select('.chart-tooltip')
 
-    g.selectAll('.age-group')
-      .data(data)
+    // Draw stacked bars
+    g.selectAll('.group')
+      .data(stackedData)
       .join('g')
-      .attr('class', 'age-group')
-      .attr('transform', (d) => `translate(${x0(d.ageGroup)},0)`)
-      .selectAll('.bar')
-      .data((d) => GROUPS.map((key) => ({ key, value: d[key], ageGroup: d.ageGroup })))
+      .attr('class', 'group')
+      .attr('transform', (d) => `translate(${x(d.group)},0)`)
+      .selectAll('.bar-segment')
+      .data((d) => d.stacks)
       .join('rect')
-      .attr('class', 'bar')
-      .attr('x', (d) => x1(d.key))
-      .attr('width', x1.bandwidth())
-      .attr('y', innerH)
-      .attr('height', 0)
-      .attr('fill', (d) => GROUP_COLORS[d.key])
-      .attr('rx', 3)
+      .attr('class', 'bar-segment')
+      .attr('x', 0)
+      .attr('width', x.bandwidth())
+      .attr('y', (d) => y(d.y1))
+      .attr('height', (d) => y(d.y0) - y(d.y1))
+      .attr('fill', (d, i) => chartColors[i % chartColors.length])
+      .attr('rx', 2)
       .on('mouseover', (event, d) => {
         d3.select(event.currentTarget).attr('opacity', 0.8)
         tooltipEl.style('opacity', 1)
-          .html(`<strong>${d.ageGroup}</strong><br/>${GROUP_LABELS[d.key]}: <strong>${d.value.toLocaleString()}</strong>`)
+          .html(`<strong>${d.group}</strong><br/>${d.label}: <strong>${d.value.toLocaleString()}</strong>`)
       })
       .on('mousemove', (event) => {
         const [mx, my] = d3.pointer(event, containerRef.current)
@@ -93,14 +117,11 @@ function GroupedBarChart({ data = [], onReset }) {
         d3.select(event.currentTarget).attr('opacity', 1)
         tooltipEl.style('opacity', 0)
       })
-      .transition().duration(300)
-      .attr('y', (d) => y(d.value))
-      .attr('height', (d) => innerH - y(d.value))
 
     // X axis
     g.append('g')
       .attr('transform', `translate(0,${innerH})`)
-      .call(d3.axisBottom(x0).tickSize(0))
+      .call(d3.axisBottom(x).tickSize(0))
       .call((sel) => sel.select('.domain').remove())
       .call((sel) =>
         sel.selectAll('.tick text')
@@ -120,16 +141,16 @@ function GroupedBarChart({ data = [], onReset }) {
       )
 
     // Legend
-    const legend = g.append('g').attr('transform', `translate(${innerW - 160},-18)`)
-    GROUPS.forEach((key, i) => {
-      const lx = i * 58
+    const legend = g.append('g').attr('transform', `translate(${innerW - 180},-14)`)
+    stackLabels.forEach((label, i) => {
+      const lx = i * 100
       legend.append('rect').attr('x', lx).attr('y', 0).attr('width', 10).attr('height', 10)
-        .attr('rx', 2).attr('fill', GROUP_COLORS[key])
-      legend.append('text').attr('x', lx + 14).attr('y', 9).text(GROUP_LABELS[key])
+        .attr('rx', 2).attr('fill', chartColors[i % chartColors.length])
+      legend.append('text').attr('x', lx + 14).attr('y', 9).text(label)
         .style('font-size', '0.68rem').style('fill', '#6B7280')
         .style('font-family', 'Inter, sans-serif')
     })
-  }, [data, width])
+  }, [data, width, groupField, stackFields, stackLabels, chartColors])
 
   if (!data || data.length === 0) {
     return (
@@ -159,4 +180,4 @@ function GroupedBarChart({ data = [], onReset }) {
   )
 }
 
-export default GroupedBarChart
+export default StackedBarChart

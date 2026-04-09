@@ -41,6 +41,7 @@ const Age_Group = () => {
   useEffect(() => {
     if (filteredData.length > 0) {
       drawLineChart(chartRef.current, filteredData);
+      
     }
   }, [filteredData]);
 

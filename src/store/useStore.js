@@ -1,9 +1,10 @@
 // src/store/useStore.js
 import { create } from 'zustand'
-import { mockData } from '../data/mockData'
+import * as d3 from 'd3'
+// import { mockData } from '../data/mockData'
 import { applyFilters } from '../data/dataUtils'
 
-const initialData = mockData
+const initialData = await d3.csv("/data/positive_drug_cleaned.csv")
 
 const defaultFilters = {
   jurisdictions: [],   // string[] — e.g. ['NSW', 'VIC']

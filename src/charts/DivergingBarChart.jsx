@@ -1,21 +1,21 @@
-// src/charts/GroupedBarChart.jsx
+// src/charts/DivergingBarChart.jsx
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
 
-const MARGIN = { top: 24, right: 24, bottom: 44, left: 52 }
-const GROUPS = ['fines', 'charges']
-const GROUP_COLORS = { fines: '#E99E1C', charges: '#BF6BA1' }
-const GROUP_LABELS = { fines: 'Fines', charges: 'Charges' }
+const MARGIN = { top: 24, right: 24, bottom: 44, left: 80 }
+const COLORS = { fines: '#E99E1C', charges: '#61196E' }
+const LABELS = { fines: 'Fines', charges: 'Charges' }
 const HEIGHT = 260
 
 /**
- * Grouped bar chart — enforcement outcomes (fines/arrests/charges) by age group.
+ * Diverging bar chart — fines (left) vs charges (right) by age group.
+ * Fines extend to the left (negative), charges extend to the right (positive).
  *
- * @param {Array}    data    - [{ ageGroup, fines, arrests, charges }]
+ * @param {Array}    data    - [{ ageGroup, fines, charges }]
  * @param {function} onReset - called when "Reset filters" is clicked in empty state
  */
-function GroupedBarChart({ data = [], onReset }) {
+function DivergingBarChart({ data = [], onReset }) {
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
@@ -41,49 +41,51 @@ function GroupedBarChart({ data = [], onReset }) {
 
     const g = svg.append('g').attr('transform', `translate(${MARGIN.left},${MARGIN.top})`)
 
-    const x0 = d3.scaleBand()
-      .domain(data.map((d) => d.ageGroup))
+    const maxValue = d3.max(data, (d) => Math.max(d.fines, d.charges)) * 1.2
+
+    const x = d3.scaleLinear()
+      .domain([-maxValue, maxValue])
       .range([0, innerW])
-      .paddingInner(0.25)
 
-    const x1 = d3.scaleBand()
-      .domain(GROUPS)
-      .range([0, x0.bandwidth()])
-      .padding(0.1)
+    const y = d3.scaleBand()
+      .domain(data.map((d) => d.ageGroup))
+      .range([0, innerH])
+      .padding(0.25)
 
-    const yMax = d3.max(data, (d) => Math.max(d.fines, d.charges)) * 1.2
-    const y = d3.scaleLinear().domain([0, yMax]).nice().range([innerH, 0])
+    const xCenter = x(0)
 
     // Gridlines
     g.append('g')
-      .call(d3.axisLeft(y).ticks(4).tickSize(-innerW).tickFormat(''))
+      .call(d3.axisBottom(x).ticks(4).tickSize(-innerH).tickFormat(''))
       .call((sel) => sel.select('.domain').remove())
       .call((sel) =>
         sel.selectAll('.tick line')
           .attr('stroke', '#F3F4F6').attr('stroke-dasharray', '3,3')
       )
 
+    // Central line at zero
+    g.append('line')
+      .attr('x1', xCenter).attr('x2', xCenter)
+      .attr('y1', 0).attr('y2', innerH)
+      .attr('stroke', '#D1D5DB').attr('stroke-width', 1)
+
     const tooltipEl = d3.select(containerRef.current).select('.chart-tooltip')
 
-    g.selectAll('.age-group')
+    // Draw fines (left bars)
+    g.selectAll('.bar-fines')
       .data(data)
-      .join('g')
-      .attr('class', 'age-group')
-      .attr('transform', (d) => `translate(${x0(d.ageGroup)},0)`)
-      .selectAll('.bar')
-      .data((d) => GROUPS.map((key) => ({ key, value: d[key], ageGroup: d.ageGroup })))
       .join('rect')
-      .attr('class', 'bar')
-      .attr('x', (d) => x1(d.key))
-      .attr('width', x1.bandwidth())
-      .attr('y', innerH)
-      .attr('height', 0)
-      .attr('fill', (d) => GROUP_COLORS[d.key])
+      .attr('class', 'bar-fines')
+      .attr('x', (d) => x(-d.fines))
+      .attr('width', (d) => xCenter - x(-d.fines))
+      .attr('y', (d) => y(d.ageGroup))
+      .attr('height', y.bandwidth())
+      .attr('fill', COLORS.fines)
       .attr('rx', 3)
       .on('mouseover', (event, d) => {
         d3.select(event.currentTarget).attr('opacity', 0.8)
         tooltipEl.style('opacity', 1)
-          .html(`<strong>${d.ageGroup}</strong><br/>${GROUP_LABELS[d.key]}: <strong>${d.value.toLocaleString()}</strong>`)
+          .html(`<strong>${d.ageGroup}</strong><br/>${LABELS.fines}: <strong>${d.fines.toLocaleString()}</strong>`)
       })
       .on('mousemove', (event) => {
         const [mx, my] = d3.pointer(event, containerRef.current)
@@ -93,42 +95,70 @@ function GroupedBarChart({ data = [], onReset }) {
         d3.select(event.currentTarget).attr('opacity', 1)
         tooltipEl.style('opacity', 0)
       })
-      .transition().duration(300)
-      .attr('y', (d) => y(d.value))
-      .attr('height', (d) => innerH - y(d.value))
 
-    // X axis
+    // Draw charges (right bars)
+    g.selectAll('.bar-charges')
+      .data(data)
+      .join('rect')
+      .attr('class', 'bar-charges')
+      .attr('x', xCenter)
+      .attr('width', (d) => x(d.charges) - xCenter)
+      .attr('y', (d) => y(d.ageGroup))
+      .attr('height', y.bandwidth())
+      .attr('fill', COLORS.charges)
+      .attr('rx', 3)
+      .on('mouseover', (event, d) => {
+        d3.select(event.currentTarget).attr('opacity', 0.8)
+        tooltipEl.style('opacity', 1)
+          .html(`<strong>${d.ageGroup}</strong><br/>${LABELS.charges}: <strong>${d.charges.toLocaleString()}</strong>`)
+      })
+      .on('mousemove', (event) => {
+        const [mx, my] = d3.pointer(event, containerRef.current)
+        tooltipEl.style('left', `${mx + 12}px`).style('top', `${my - 40}px`)
+      })
+      .on('mouseleave', (event) => {
+        d3.select(event.currentTarget).attr('opacity', 1)
+        tooltipEl.style('opacity', 0)
+      })
+
+    // Y axis (age groups)
     g.append('g')
-      .attr('transform', `translate(0,${innerH})`)
-      .call(d3.axisBottom(x0).tickSize(0))
+      .call(d3.axisLeft(y).tickSize(0))
       .call((sel) => sel.select('.domain').remove())
       .call((sel) =>
         sel.selectAll('.tick text')
-          .attr('dy', '1.4em')
           .style('font-size', '0.72rem').style('fill', '#6B7280')
           .style('font-family', 'Inter, sans-serif')
       )
 
-    // Y axis
+    // X axis
     g.append('g')
-      .call(d3.axisLeft(y).ticks(4).tickFormat((d) => (d >= 1000 ? `${d / 1000}k` : d)).tickSize(0))
+      .attr('transform', `translate(0,${innerH})`)
+      .call(d3.axisBottom(x).ticks(4).tickFormat((d) => (d === 0 ? '0' : Math.abs(d) >= 1000 ? `${Math.abs(d) / 1000}k` : Math.abs(d))).tickSize(0))
       .call((sel) => sel.select('.domain').remove())
       .call((sel) =>
         sel.selectAll('.tick text')
+          .attr('dy', '1.4em')
           .style('font-size', '0.68rem').style('fill', '#9CA3AF')
           .style('font-family', 'Inter, sans-serif')
       )
 
     // Legend
-    const legend = g.append('g').attr('transform', `translate(${innerW - 160},-18)`)
-    GROUPS.forEach((key, i) => {
-      const lx = i * 58
-      legend.append('rect').attr('x', lx).attr('y', 0).attr('width', 10).attr('height', 10)
-        .attr('rx', 2).attr('fill', GROUP_COLORS[key])
-      legend.append('text').attr('x', lx + 14).attr('y', 9).text(GROUP_LABELS[key])
-        .style('font-size', '0.68rem').style('fill', '#6B7280')
-        .style('font-family', 'Inter, sans-serif')
-    })
+    const legend = g.append('g').attr('transform', `translate(${innerW - 140},-18)`)
+    
+    // Fines legend
+    legend.append('rect').attr('x', 0).attr('y', 0).attr('width', 10).attr('height', 10)
+      .attr('rx', 2).attr('fill', COLORS.fines)
+    legend.append('text').attr('x', 14).attr('y', 9).text(LABELS.fines)
+      .style('font-size', '0.68rem').style('fill', '#6B7280')
+      .style('font-family', 'Inter, sans-serif')
+
+    // Charges legend
+    legend.append('rect').attr('x', 70).attr('y', 0).attr('width', 10).attr('height', 10)
+      .attr('rx', 2).attr('fill', COLORS.charges)
+    legend.append('text').attr('x', 84).attr('y', 9).text(LABELS.charges)
+      .style('font-size', '0.68rem').style('fill', '#6B7280')
+      .style('font-family', 'Inter, sans-serif')
   }, [data, width])
 
   if (!data || data.length === 0) {
@@ -159,4 +189,4 @@ function GroupedBarChart({ data = [], onReset }) {
   )
 }
 
-export default GroupedBarChart
+export default DivergingBarChart

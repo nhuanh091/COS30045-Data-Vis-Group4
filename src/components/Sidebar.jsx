@@ -19,15 +19,17 @@ import {
   MenuRounded,
   CloseRounded,
   ScienceRounded,
+  MapRounded,
 } from '@mui/icons-material'
 
 const DRAWER_WIDTH = 260
 
 const navItems = [
-  { label: 'Home', icon: <HomeRounded />, path: '/' },
-  { label: 'Dashboard', icon: <BarChartRounded />, path: '/dashboard' },
-  { label: 'Insights', icon: <ScienceRounded />, path: '/insights' },
-  { label: 'About', icon: <InfoRounded />, path: '/about' },
+  { label: 'Home',                  icon: <HomeRounded />,     path: '/' },
+  { label: 'Dashboard',             icon: <BarChartRounded />, path: '/dashboard' },
+  { label: 'Jurisdiction Analysis', icon: <MapRounded />,      path: '/jurisdiction' },
+  { label: 'Insights',              icon: <ScienceRounded />,  path: '/insights' },
+  { label: 'About',                 icon: <InfoRounded />,     path: '/about' },
 ]
 
 function Sidebar() {

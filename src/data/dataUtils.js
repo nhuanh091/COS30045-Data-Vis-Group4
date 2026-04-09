@@ -215,3 +215,68 @@ export function computeKPIs(data) {
   const positiveRate = totalTests > 0 ? (positives / totalTests) * 100 : 0
   return { totalTests, positiveRate, fines, arrests, charges, noDrugsDetected, positives }
 }
+
+/**
+ * Aggregate outcomes by jurisdiction for HeatmapChart.
+ * Returns [{ jurisdiction, fines, charges, arrests }] sorted by jurisdiction name.
+ */
+export function aggregateHeatmapData(data) {
+  const map = {}
+  data.forEach((row) => {
+    const key = row.JURISDICTION
+    if (!map[key]) map[key] = { jurisdiction: key, fines: 0, charges: 0, arrests: 0 }
+    map[key].fines   += (Number(row.FINES)   || 0)
+    map[key].charges += (Number(row.CHARGES) || 0)
+    map[key].arrests += (Number(row.ARRESTS) || 0)
+  })
+  return Object.values(map).sort((a, b) => a.jurisdiction.localeCompare(b.jurisdiction))
+}
+
+/**
+ * Aggregate drug type totals by jurisdiction for RadarChart.
+ * Returns { NSW: { amphetamine, cannabis, cocaine, ecstasy, methylamphetamine, other }, … }
+ */
+export function aggregateRadarData(data) {
+  const map = {}
+  data.forEach((row) => {
+    const key = row.JURISDICTION
+    if (!map[key]) {
+      map[key] = { amphetamine: 0, cannabis: 0, cocaine: 0, ecstasy: 0, methylamphetamine: 0, other: 0 }
+    }
+    map[key].amphetamine       += (Number(row.AMPHETAMINE)       || 0)
+    map[key].cannabis          += (Number(row.CANNABIS)          || 0)
+    map[key].cocaine           += (Number(row.COCAINE)           || 0)
+    map[key].ecstasy           += (Number(row.ECSTASY)           || 0)
+    map[key].methylamphetamine += (Number(row.METHYLAMPHETAMINE) || 0)
+    map[key].other             += (Number(row.OTHER)             || 0)
+  })
+  return map
+}
+
+/**
+ * Build D3 hierarchy for SunburstChart.
+ * Returns { name: 'root', children: [{ name: 'Stage N', children: [{ name: 'Yes'|'No', value }] }] }
+ */
+export function aggregateSunburstData(data) {
+  const map = {}
+  data.forEach((row) => {
+    const stage = row.DETECTION_METHOD
+    const best  = row.BEST_DETECTION_METHOD === 'Yes' ? 'Yes' : 'No'
+    const count = Number(row.COUNT) || 0
+    if (!map[stage]) map[stage] = { Yes: 0, No: 0 }
+    map[stage][best] += count
+  })
+
+  const children = Object.entries(map)
+    .filter(([, v]) => v.Yes + v.No > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([stage, v]) => ({
+      name: stage,
+      children: [
+        { name: 'Yes', value: v.Yes },
+        { name: 'No',  value: v.No  },
+      ],
+    }))
+
+  return { name: 'root', children }
+}

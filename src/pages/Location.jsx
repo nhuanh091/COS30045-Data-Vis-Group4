@@ -194,16 +194,20 @@ function Location() {
       {/* Insights Section */}
       <InsightsBox insights={[
         {
-          title: 'Metropolitan Area Volume',
-          description: 'Major Cities of Australia consistently report the highest absolute number of positive tests. This is directly tied to the higher traffic volumes and heavier saturation of police testing checkpoints in urban environments.'
+          title: 'Trends by Location (Multi-line Chart): The Urban-Regional Disparity',
+          description: 'Major Cities naturally report high absolute numbers due to sheer traffic density. However, Inner Regional areas closely rival—and occasionally surpass—metropolitan volumes in positive detections. This reveals a critical geographic insight: impaired driving is not just an urban issue, but a deeply rooted challenge in regional areas that requires sustained police checkpoint saturation.'
         },
         {
-          title: 'Regional Testing Disparities',
-          description: 'While Inner Regional and Outer Regional areas produce lower absolute positive numbers, they frequently experience a high positive testing rate relative to their population size. This suggests persistent and challenging issues regarding road safety and impaired driving in rural environments.'
+          title: 'Drug Type Distribution (Donut Chart): Uniform Geographic Drug Preferences',
+          description: 'Despite the vast geographical and cultural differences between Major Cities and Remote Australia, the core drug profile remains remarkably consistent. Cannabis (34%) and Amphetamine (34%) maintain a staggering dominance everywhere, debunking the notion that specific synthetic drugs might be heavily skewed towards either rural or urban divides.'
         },
         {
-          title: 'Uniform Drug Profiles',
-          description: 'Despite geographic distancing, the core drug profile remains essentially identical across all territories. Cannabis followed by Amphetamine maintains staggering dominance everywhere, debunking notions that synthetic drugs might be fundamentally skewed towards rural vs urban divides.'
+          title: 'Fines vs Charges by Location (Diverging Bar Chart): The Regional Enforcement Burden',
+          description: 'Interestingly, Inner Regional Australia records a noticeably higher volume of formal Charges (purple) compared to Major Cities, despite having smaller overall populations. This indicates that roadside stops in regional environments are statistically more likely to escalate from standard penalty notices (Fines) into severe legal outcomes.'
+        },
+        {
+          title: 'Detection Methods (Stacked Bar Chart): Procedural Consistency Across Territories',
+          description: 'The ratio of Stage 1 (initial screening) to Stage 3 (lab confirmation) holds steady across different remoteness areas. This demonstrates that law enforcement agencies maintain strict, uniform testing protocols regardless of how remote a checkpoint is, ensuring equal legal rigor for all citizens.'
         }
       ]} />
     </Box>

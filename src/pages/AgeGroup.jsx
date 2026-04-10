@@ -193,16 +193,20 @@ function AgeGroup() {
       {/* Insights Section */}
       <InsightsBox insights={[
         {
-          title: 'High-Risk Demographics',
-          description: 'The 17-25 and 26-39 age brackets represent the highest frequency of positive detections. This highlights a critical demographic that should be the primary focus for targeted road safety and educational campaigns.'
+          title: 'Trends by Age Group (Line Chart): Temporal Vulnerability in Youth',
+          description: 'The 17–25 and 26–39 age brackets consistently drive the highest monthly volumes of positive detections. The data shows distinct synchronous spikes for these groups across the year, suggesting that roadside enforcement campaigns should be heavily targeted toward younger demographics during high-risk seasonal periods rather than applying a blanket approach across all ages.'
         },
         {
-          title: 'Severity Varies by Age',
-          description: 'While Fines are universally higher than formal charges across all ages, older demographics (e.g., 40-64) see a slightly higher proportion of charges compared to younger drivers, which may indicate issues with compounding offenses or harsher policing for repeat infractions.'
+          title: 'Drug Type Distribution (Donut Chart): Dominant Substance Profiles',
+          description: 'Cannabis (34%) and Amphetamines (31%) account for nearly two-thirds of all positive detections across all age groups. This staggering dominance indicates a systemic preference for these two substances over others like Cocaine (18%) or Ecstasy (12%), establishing a clear priority for specific testing kit procurements.'
         },
         {
-          title: 'Testing Stage Efficiency',
-          description: 'Oral fluid tests (Stage 1) make up the overwhelming majority of initial detection methods. These tests remain highly correlated with positive confirmatory laboratory analysis (Stage 3), underscoring the reliability of roadside tools.'
+          title: 'Fines vs Charges by Age Group (Diverging Bar Chart): Enforcement Severity Scales with Age',
+          description: 'While Fines (yellow) are universally issued across all age groups, the volume of formal Charges (purple) spikes significantly for the 26–39 demographic. This disparity suggests that drivers in their late twenties and thirties are either committing more severe infractions alongside drug driving or have higher rates of repeat offenses that escalate simple fines into formal charges.'
+        },
+        {
+          title: 'Detection Methods (Stacked Bar Chart): Screening vs. Confirmation Efficacy',
+          description: 'Stage 1 (Oral Fluid) testing handles the massive frontline volume of roadside operations. However, Stage 3 (Lab Testing) possesses the highest concentration of "Best Detection" outcomes. This highlights a clear operational pipeline: Stage 1 acts as a broad, efficient screening net, while robust Stage 3 laboratory infrastructure remains the definitive legal backbone for confirming convictions.'
         }
       ]} />
     </Box>

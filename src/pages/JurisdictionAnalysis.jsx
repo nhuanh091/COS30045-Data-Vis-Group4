@@ -264,16 +264,20 @@ function JurisdictionAnalysis() {
       {/* Insights Section */}
       <InsightsBox insights={[
         {
-          title: 'Testing Volume Correlates with Positives',
-          description: 'NSW and VIC consistently carry out the highest volume of roadside tests. Consequently, they report the largest absolute numbers of positive drug tests, indicating that higher enforcement frequency directly scales with positive detection numbers.'
+          title: 'Testing Volume vs Positives (Dual-Axis Line Chart): The Deterrent Effect',
+          description: 'Sharp, massive spikes in total tests conducted (represented by the yellow line, often correlating with holiday blitzes) do not necessarily yield a proportional spike in positive cases (purple line). This suggests that high-visibility, massive blanket-testing operations act powerfully as a psychological deterrent rather than just a direct catch mechanism.'
         },
         {
-          title: 'Cannabis is the Predominant Drug',
-          description: 'Regardless of the jurisdiction, Cannabis vastly exceeds other detected drugs like Amphetamines or Cocaine, suggesting a systemic trend un-isolated from geographical boundaries.'
+          title: 'Drug Types by Jurisdiction (Radar Chart): National Cannabis Dominance',
+          description: 'The outward skew of the radar chart explicitly illustrates that Cannabis is the universally predominant drug detected across state lines. The shape of the radar remains relatively uniform across NSW, VIC, WA, and SA, proving a nationwide consistency in substance abuse trends among drivers.'
         },
         {
-          title: 'Fines Over Charges',
-          description: 'Enforcement generally heavily leans towards issuing Fines rather than progressing to Arrests or formal Charges. This highlights the penalty-first approach of standard roadside detection unless aggravating factors are present.'
+          title: 'Detection Stage x Best Method (Sunburst Chart): The Crucial Role of Stage 3 Labs',
+          description: 'The inner rings of the sunburst visualization confirm that while multiple testing stages are utilized, Stage 3 is the undisputed core of accurate, finalized detection. It serves as the ultimate validation point, reinforcing that jurisdictional reporting heavily relies on backend laboratory processing for data integrity.'
+        },
+        {
+          title: 'Outcomes by Jurisdiction (Heatmap): Distinct State Policing Strategies',
+          description: 'The heatmap reveals fundamentally different operational cultures across state lines. New South Wales (NSW) relies heavily on an astronomical volume of Fines (27.5k) and Charges (31.7k). Conversely, territories like the Northern Territory (NT) and South Australia (SA) show a disproportionately high reliance on immediate Arrests (324 and 272 respectively). This highlights profound differences in local legislation and police enforcement strategies.'
         }
       ]} />
     </Box>

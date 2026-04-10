@@ -28,23 +28,40 @@ function InsightsBox({ insights }) {
                 alignItems="flex-start" 
                 sx={{ 
                   px: 0, 
-                  py: 1.5,
+                  py: 2.5,
                   borderBottom: index !== insights.length - 1 ? '1px dashed #EDDDEC' : 'none'
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 28, mt: 0.5 }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#61196E' }} />
+                <ListItemIcon sx={{ minWidth: 24, mt: 0.8 }}>
+                  <Box sx={{ 
+                    width: 6, 
+                    height: 6, 
+                    borderRadius: '50%', 
+                    bgcolor: '#61196E',
+                    boxShadow: '0 0 0 3px rgba(97, 25, 110, 0.05)'
+                  }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary={item.title}
-                  secondary={item.description}
-                  primaryTypographyProps={{
-                    sx: { fontSize: '0.9rem', fontWeight: 700, color: '#1F2937', mb: 0.5, fontFamily: 'Inter, sans-serif' }
-                  }}
-                  secondaryTypographyProps={{
-                    sx: { fontSize: '0.85rem', color: '#4B5563', lineHeight: 1.6, fontFamily: 'Inter, sans-serif' }
-                  }}
-                />
+                <Box sx={{ flex: 1 }}>
+                  <Typography sx={{ 
+                    fontSize: '0.95rem', 
+                    fontWeight: 700, 
+                    color: '#1F2937', 
+                    mb: 0.75, 
+                    fontFamily: 'Inter, sans-serif',
+                    lineHeight: 1.2
+                  }}>
+                    {item.title}
+                  </Typography>
+                  <Typography sx={{ 
+                    fontSize: '0.88rem', 
+                    color: '#4B5563', 
+                    lineHeight: 1.6, 
+                    fontFamily: 'Inter, sans-serif',
+                    textAlign: 'justify'
+                  }}>
+                    {item.description}
+                  </Typography>
+                </Box>
               </ListItem>
             ))}
           </List>

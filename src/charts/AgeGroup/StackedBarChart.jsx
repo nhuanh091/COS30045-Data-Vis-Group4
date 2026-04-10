@@ -1,7 +1,8 @@
-// src/charts/StackedBarChart.jsx
+// src/charts/AgeGroup/StackedBarChart.jsx
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
+import { useStore } from '../../store/useStore'
 
 const MARGIN = { top: 20, right: 60, bottom: 44, left: 60 }
 const DEFAULT_COLORS = ['#E99E1C', '#61196E']
@@ -9,13 +10,14 @@ const HEIGHT = 300
 
 /**
  * Reusable stacked bar chart — displays grouped data with stacked segments.
- * Bars are vertical by default, with stacking along the y-axis.
+ * Reads filters.stage from store — fades non-selected stage groups.
+ * Click on a bar group to toggle the stage filter.
  *
  * @param {Array}    data        - Array of objects with grouping field and stack fields
  * @param {string}   groupField  - Field name to group by (e.g., 'detectionMethod')
  * @param {Array}    stackFields - Array of field names to stack (e.g., ['best', 'notBest'])
- * @param {Array}    stackLabels - Array of display labels for each stack (e.g., ['Best', 'Not Best'])
- * @param {Array}    colors      - Optional color array for each segment (overrides defaults)
+ * @param {Array}    stackLabels - Array of display labels for each stack
+ * @param {Array}    colors      - Optional color array for each segment
  * @param {function} onReset     - called when "Reset filters" is clicked in empty state
  */
 function StackedBarChart({
@@ -29,6 +31,7 @@ function StackedBarChart({
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
+  const { filters, setFilter } = useStore()
 
   const chartColors = colors.length > 0 ? colors : DEFAULT_COLORS
 
@@ -52,6 +55,9 @@ function StackedBarChart({
     const innerH = HEIGHT - MARGIN.top - MARGIN.bottom
 
     const g = svg.append('g').attr('transform', `translate(${MARGIN.left},${MARGIN.top})`)
+
+    const selectedStage = filters.stage
+    const hasStageFilter = selectedStage !== null
 
     // Compute stacked totals
     const stackedData = data.map((d) => {
@@ -88,6 +94,12 @@ function StackedBarChart({
 
     const tooltipEl = d3.select(containerRef.current).select('.chart-tooltip')
 
+    // Helper: get opacity for a group
+    const getGroupOpacity = (groupName) => {
+      if (!hasStageFilter) return 1
+      return groupName === selectedStage ? 1 : 0.15
+    }
+
     // Draw stacked bars
     g.selectAll('.group')
       .data(stackedData)
@@ -103,9 +115,12 @@ function StackedBarChart({
       .attr('y', (d) => y(d.y1))
       .attr('height', (d) => y(d.y0) - y(d.y1))
       .attr('fill', (d, i) => chartColors[i % chartColors.length])
+      .attr('opacity', (d) => getGroupOpacity(d.group))
       .attr('rx', 2)
+      .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget).attr('opacity', 0.8)
+        const op = getGroupOpacity(d.group)
+        d3.select(event.currentTarget).attr('opacity', Math.min(1, op + 0.2))
         tooltipEl.style('opacity', 1)
           .html(`<strong>${d.group}</strong><br/>${d.label}: <strong>${d.value.toLocaleString()}</strong>`)
       })
@@ -113,9 +128,16 @@ function StackedBarChart({
         const [mx, my] = d3.pointer(event, containerRef.current)
         tooltipEl.style('left', `${mx + 12}px`).style('top', `${my - 40}px`)
       })
-      .on('mouseleave', (event) => {
-        d3.select(event.currentTarget).attr('opacity', 1)
+      .on('mouseleave', (event, d) => {
+        d3.select(event.currentTarget).attr('opacity', getGroupOpacity(d.group))
         tooltipEl.style('opacity', 0)
+      })
+      .on('click', (event, d) => {
+        if (filters.stage === d.group) {
+          setFilter('stage', null)
+        } else {
+          setFilter('stage', d.group)
+        }
       })
 
     // X axis
@@ -123,12 +145,26 @@ function StackedBarChart({
       .attr('transform', `translate(0,${innerH})`)
       .call(d3.axisBottom(x).tickSize(0))
       .call((sel) => sel.select('.domain').remove())
-      .call((sel) =>
-        sel.selectAll('.tick text')
-          .attr('dy', '1.4em')
-          .style('font-size', '0.72rem').style('fill', '#6B7280')
-          .style('font-family', 'Inter, sans-serif')
-      )
+
+    const xAxisTexts = g.select('g:last-of-type').selectAll('.tick text')
+    xAxisTexts
+      .attr('dy', '1.4em')
+      .style('font-size', '0.72rem').style('fill', '#6B7280')
+      .style('font-family', 'Inter, sans-serif')
+      .style('cursor', 'pointer')
+      .attr('opacity', function () {
+        if (!hasStageFilter) return 1
+        const label = d3.select(this).text()
+        return label === selectedStage ? 1 : 0.35
+      })
+      .on('click', function () {
+        const label = d3.select(this).text()
+        if (filters.stage === label) {
+          setFilter('stage', null)
+        } else {
+          setFilter('stage', label)
+        }
+      })
 
     // Y axis
     g.append('g')
@@ -150,7 +186,7 @@ function StackedBarChart({
         .style('font-size', '0.68rem').style('fill', '#6B7280')
         .style('font-family', 'Inter, sans-serif')
     })
-  }, [data, width, groupField, stackFields, stackLabels, chartColors])
+  }, [data, width, groupField, stackFields, stackLabels, chartColors, filters.stage])
 
   if (!data || data.length === 0) {
     return (

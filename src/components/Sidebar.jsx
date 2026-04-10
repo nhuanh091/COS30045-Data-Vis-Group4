@@ -26,8 +26,9 @@ const DRAWER_WIDTH = 260
 
 const navItems = [
   { label: 'Home',                  icon: <HomeRounded />,     path: '/' },
-  { label: 'Dashboard',             icon: <BarChartRounded />, path: '/dashboard' },
   { label: 'Jurisdiction Analysis', icon: <MapRounded />,      path: '/jurisdiction' },
+  { label: 'Age Group Analysis',    icon: <MapRounded />,      path: '/age-group' },
+  { label: 'Location Analysis',     icon: <MapRounded />,      path: '/location' },
   { label: 'Insights',              icon: <ScienceRounded />,  path: '/insights' },
   { label: 'About',                 icon: <InfoRounded />,     path: '/about' },
 ]

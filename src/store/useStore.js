@@ -11,6 +11,8 @@ const defaultFilters = {
   year: null,          // number | null — e.g. 2023
   month: null,         // number | null — 1-indexed, e.g. 3 for March
   stage: null,         // string | null — e.g. 'Stage 1'
+  ageGroup: null,      // string | null — e.g. '17-25'
+  locationGroup: null, // string | null — e.g. 'Metropolitan'
 }
 
 export const useStore = create((set, get) => ({

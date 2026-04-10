@@ -2,8 +2,8 @@
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
-import { useStore } from '../store/useStore'
-import { JURISDICTIONS_LIST } from '../data/mockData'
+import { useStore } from '../../store/useStore'
+import { JURISDICTIONS_LIST } from '../../data/mockData'
 
 const AXES = ['Amphetamine', 'Cannabis', 'Cocaine', 'Ecstasy', 'Methylamphetamine', 'Other']
 const AXIS_KEY = {
@@ -85,14 +85,14 @@ function RadarChart({ data = {} }) {
 
     const g = svg.append('g').attr('transform', `translate(${cx},${cy})`)
 
-    // Concentric grid rings
-    ;[0.2, 0.4, 0.6, 0.8, 1].forEach((pct) => {
-      g.append('circle')
-        .attr('r', radius * pct)
-        .attr('fill', 'none')
-        .attr('stroke', '#F3F4F6')
-        .attr('stroke-width', 1)
-    })
+      // Concentric grid rings
+      ;[0.2, 0.4, 0.6, 0.8, 1].forEach((pct) => {
+        g.append('circle')
+          .attr('r', radius * pct)
+          .attr('fill', 'none')
+          .attr('stroke', '#F3F4F6')
+          .attr('stroke-width', 1)
+      })
 
     // Axis spokes + labels
     AXES.forEach((axis, i) => {

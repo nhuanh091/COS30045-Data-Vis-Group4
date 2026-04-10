@@ -2,8 +2,8 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
-import { aggregateMonthlyStatistics } from '../data/dataUtils'
-import { useStore } from '../store/useStore'
+import { aggregateMonthlyStatistics } from '../../data/dataUtils'
+import { useStore } from '../../store/useStore'
 
 const MARGIN = { top: 20, right: 56, bottom: 44, left: 52 }
 

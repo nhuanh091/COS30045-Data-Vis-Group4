@@ -27,6 +27,14 @@ export function applyFilters(data, filters) {
     result = result.filter((d) => d.DETECTION_METHOD === filters.stage)
   }
 
+  if (filters.ageGroup !== null && filters.ageGroup !== undefined) {
+    result = result.filter((d) => d.AGE_GROUP === filters.ageGroup)
+  }
+
+  if (filters.locationGroup !== null && filters.locationGroup !== undefined) {
+    result = result.filter((d) => d.LOCATION === filters.locationGroup)
+  }
+
   return result
 }
 
@@ -73,17 +81,17 @@ export function aggregateByMonthAndAgeGroup(data) {
     const monthKey = `${row.YEAR}-${String(row.MONTH).padStart(2, '0')}`
     const ageGroup = row.AGE_GROUP || 'Unknown'
     const positives = (Number(row.CANNABIS) || 0) +
-                      (Number(row.AMPHETAMINE) || 0) +
-                      (Number(row.METHYLAMPHETAMINE) || 0) +
-                      (Number(row.ECSTASY) || 0) +
-                      (Number(row.COCAINE) || 0) +
-                      (Number(row.OTHER) || 0) +
-                      (Number(row.UNKNOWN) || 0)
+      (Number(row.AMPHETAMINE) || 0) +
+      (Number(row.METHYLAMPHETAMINE) || 0) +
+      (Number(row.ECSTASY) || 0) +
+      (Number(row.COCAINE) || 0) +
+      (Number(row.OTHER) || 0) +
+      (Number(row.UNKNOWN) || 0)
 
     if (!monthMap[monthKey]) {
       monthMap[monthKey] = { month: monthKey }
     }
-    
+
     // Sum positives for this age group in this month
     monthMap[monthKey][ageGroup] = (monthMap[monthKey][ageGroup] || 0) + positives
   })
@@ -97,22 +105,22 @@ export function aggregateByMonthAndAgeGroup(data) {
  */
 export function aggregateByDrugType(data) {
   const totals = {
-    Cannabis:          0,
-    Amphetamine:       0,
+    Cannabis: 0,
+    Amphetamine: 0,
     Methylamphetamine: 0,
-    Ecstasy:           0,
-    Cocaine:           0,
-    Other:             0,
-    Unknown:           0,
+    Ecstasy: 0,
+    Cocaine: 0,
+    Other: 0,
+    Unknown: 0,
   }
   data.forEach((row) => {
-    totals.Cannabis          += (Number(row.CANNABIS) || 0)
-    totals.Amphetamine       += (Number(row.AMPHETAMINE) || 0)
+    totals.Cannabis += (Number(row.CANNABIS) || 0)
+    totals.Amphetamine += (Number(row.AMPHETAMINE) || 0)
     totals.Methylamphetamine += (Number(row.METHYLAMPHETAMINE) || 0)
-    totals.Ecstasy           += (Number(row.ECSTASY) || 0)
-    totals.Cocaine           += (Number(row.COCAINE) || 0)
-    totals.Other             += (Number(row.OTHER) || 0)
-    totals.Unknown           += (Number(row.UNKNOWN) || 0)
+    totals.Ecstasy += (Number(row.ECSTASY) || 0)
+    totals.Cocaine += (Number(row.COCAINE) || 0)
+    totals.Other += (Number(row.OTHER) || 0)
+    totals.Unknown += (Number(row.UNKNOWN) || 0)
   })
   return Object.entries(totals)
     .map(([label, value]) => ({ label, value: Number(value) || 0 }))
@@ -167,7 +175,7 @@ export function aggregateByAgeGroup(data) {
   data.forEach((row) => {
     const key = row.AGE_GROUP
     if (!map[key]) map[key] = { ageGroup: key, fines: 0, arrests: 0, charges: 0 }
-    map[key].fines   += (Number(row.FINES) || 0)
+    map[key].fines += (Number(row.FINES) || 0)
     map[key].arrests += (Number(row.ARRESTS) || 0)
     map[key].charges += (Number(row.CHARGES) || 0)
   })
@@ -204,13 +212,13 @@ export function computeKPIs(data) {
   let totalTests = 0, fines = 0, arrests = 0, charges = 0, noDrugsDetected = 0
   let positives = 0
   data.forEach((row) => {
-    totalTests      += (Number(row.COUNT) || 0)
-    fines           += (Number(row.FINES) || 0)
-    arrests         += (Number(row.ARRESTS) || 0)
-    charges         += (Number(row.CHARGES) || 0)
+    totalTests += (Number(row.COUNT) || 0)
+    fines += (Number(row.FINES) || 0)
+    arrests += (Number(row.ARRESTS) || 0)
+    charges += (Number(row.CHARGES) || 0)
     noDrugsDetected += (Number(row.NO_DRUGS_DETECTED) || 0)
-    positives       += (Number(row.CANNABIS) || 0) + (Number(row.AMPHETAMINE) || 0) + (Number(row.METHYLAMPHETAMINE) || 0) +
-                       (Number(row.ECSTASY) || 0) + (Number(row.COCAINE) || 0) + (Number(row.OTHER) || 0) + (Number(row.UNKNOWN) || 0)
+    positives += (Number(row.CANNABIS) || 0) + (Number(row.AMPHETAMINE) || 0) + (Number(row.METHYLAMPHETAMINE) || 0) +
+      (Number(row.ECSTASY) || 0) + (Number(row.COCAINE) || 0) + (Number(row.OTHER) || 0) + (Number(row.UNKNOWN) || 0)
   })
   const positiveRate = totalTests > 0 ? (positives / totalTests) * 100 : 0
   return { totalTests, positiveRate, fines, arrests, charges, noDrugsDetected, positives }
@@ -225,7 +233,7 @@ export function aggregateHeatmapData(data) {
   data.forEach((row) => {
     const key = row.JURISDICTION
     if (!map[key]) map[key] = { jurisdiction: key, fines: 0, charges: 0, arrests: 0 }
-    map[key].fines   += (Number(row.FINES)   || 0)
+    map[key].fines += (Number(row.FINES) || 0)
     map[key].charges += (Number(row.CHARGES) || 0)
     map[key].arrests += (Number(row.ARRESTS) || 0)
   })
@@ -243,12 +251,12 @@ export function aggregateRadarData(data) {
     if (!map[key]) {
       map[key] = { amphetamine: 0, cannabis: 0, cocaine: 0, ecstasy: 0, methylamphetamine: 0, other: 0 }
     }
-    map[key].amphetamine       += (Number(row.AMPHETAMINE)       || 0)
-    map[key].cannabis          += (Number(row.CANNABIS)          || 0)
-    map[key].cocaine           += (Number(row.COCAINE)           || 0)
-    map[key].ecstasy           += (Number(row.ECSTASY)           || 0)
+    map[key].amphetamine += (Number(row.AMPHETAMINE) || 0)
+    map[key].cannabis += (Number(row.CANNABIS) || 0)
+    map[key].cocaine += (Number(row.COCAINE) || 0)
+    map[key].ecstasy += (Number(row.ECSTASY) || 0)
     map[key].methylamphetamine += (Number(row.METHYLAMPHETAMINE) || 0)
-    map[key].other             += (Number(row.OTHER)             || 0)
+    map[key].other += (Number(row.OTHER) || 0)
   })
   return map
 }
@@ -261,7 +269,7 @@ export function aggregateSunburstData(data) {
   const map = {}
   data.forEach((row) => {
     const stage = row.DETECTION_METHOD
-    const best  = row.BEST_DETECTION_METHOD === 'Yes' ? 'Yes' : 'No'
+    const best = row.BEST_DETECTION_METHOD === 'Yes' ? 'Yes' : 'No'
     const count = Number(row.COUNT) || 0
     if (!map[stage]) map[stage] = { Yes: 0, No: 0 }
     map[stage][best] += count
@@ -274,7 +282,7 @@ export function aggregateSunburstData(data) {
       name: stage,
       children: [
         { name: 'Yes', value: v.Yes },
-        { name: 'No',  value: v.No  },
+        { name: 'No', value: v.No },
       ],
     }))
 
@@ -292,11 +300,11 @@ export function aggregateMonthlyStatistics(data) {
     if (!map[monthKey]) {
       map[monthKey] = { month: monthKey, totalTests: 0, positives: 0, fines: 0, arrests: 0, charges: 0 }
     }
-    map[monthKey].totalTests  += (Number(row.TESTS_CONDUCTED) || 0)
-    map[monthKey].positives   += (Number(row.POSITIVE_RESULTS) || 0)
-    map[monthKey].fines       += (Number(row.FINES) || 0)
-    map[monthKey].arrests     += (Number(row.ARRESTS) || 0)
-    map[monthKey].charges     += (Number(row.CHARGES) || 0)
+    map[monthKey].totalTests += (Number(row.TESTS_CONDUCTED) || 0)
+    map[monthKey].positives += (Number(row.POSITIVE_RESULTS) || 0)
+    map[monthKey].fines += (Number(row.FINES) || 0)
+    map[monthKey].arrests += (Number(row.ARRESTS) || 0)
+    map[monthKey].charges += (Number(row.CHARGES) || 0)
   })
   return Object.values(map).sort((a, b) => a.month.localeCompare(b.month))
 }
@@ -308,11 +316,11 @@ export function aggregateMonthlyStatistics(data) {
 export function computeStatisticsKPIs(data) {
   let totalTests = 0, positiveTests = 0, fines = 0, arrests = 0, charges = 0
   data.forEach((row) => {
-    totalTests     += (Number(row.TESTS_CONDUCTED) || 0)
-    positiveTests  += (Number(row.POSITIVE_RESULTS) || 0)
-    fines          += (Number(row.FINES) || 0)
-    arrests        += (Number(row.ARRESTS) || 0)
-    charges        += (Number(row.CHARGES) || 0)
+    totalTests += (Number(row.TESTS_CONDUCTED) || 0)
+    positiveTests += (Number(row.POSITIVE_RESULTS) || 0)
+    fines += (Number(row.FINES) || 0)
+    arrests += (Number(row.ARRESTS) || 0)
+    charges += (Number(row.CHARGES) || 0)
   })
   const positiveRate = totalTests > 0 ? (positiveTests / totalTests) * 100 : 0
   return { totalTests, positiveTests, positiveRate, fines, arrests, charges }

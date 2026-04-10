@@ -1,4 +1,4 @@
-// src/pages/Dashboard.jsx
+// src/pages/AgeGroup.jsx
 import { useMemo } from 'react'
 import { Box, Card, CardContent, Typography, useMediaQuery } from '@mui/material'
 import { useStore } from '../store/useStore'
@@ -6,38 +6,69 @@ import {
   aggregateByMonth,
   aggregateByMonthAndAgeGroup,
   aggregateByDrugType,
-  aggregateByDetectionMethod,
   aggregateByDetectionMethodWithBest,
-  aggregateByJurisdiction,
   aggregateByAgeGroup,
   computeKPIs,
 } from '../data/dataUtils'
 import FilterBar from '../components/FilterBar'
-import KPICard from '../components/KPICard'
-import LineBarChart from '../charts/LineBarChart'
-import LineChart from '../charts/LineChart'
-import DonutChart from '../charts/DonutChart'
-import BarChart from '../charts/BarChart'
-import GroupedBarChart from '../charts/GroupedBarChart'
-import DivergingBarChart from '../charts/DivergingBarChart'
-import StackedBarChart from '../charts/StackedBarChart'
+import LineChart from '../charts/AgeGroup/LineChart'
+import DonutChart from '../charts/AgeGroup/DonutChart'
+import DivergingBarChart from '../charts/AgeGroup/DivergingBarChart'
+import StackedBarChart from '../charts/AgeGroup/StackedBarChart'
 
-const DRUG_COLORS  = ['#61196E', '#E99E1C', '#7658B2', '#BF6BA1', '#852501', '#A48ECA', '#D1D5DB']
-const STAGE_COLORS = ['#61196E', '#A48ECA', '#E99E1C']
+const DRUG_COLORS = ['#61196E', '#E99E1C', '#7658B2', '#BF6BA1', '#852501', '#A48ECA', '#D1D5DB']
 
-function Age_Group2() {
-  const { filteredData, resetFilters } = useStore()
+function AgeGroup() {
+  const { rawData, filteredData, filters, resetFilters } = useStore()
   const isWide = useMediaQuery('(min-width:900px)')
 
-  const monthlyData         = useMemo(() => aggregateByMonth(filteredData),                [filteredData])
-  const monthlyAgeGroupData = useMemo(() => aggregateByMonthAndAgeGroup(filteredData),    [filteredData])
-  const drugTypeData        = useMemo(() => aggregateByDrugType(filteredData),            [filteredData])
-  const detectionData       = useMemo(() => aggregateByDetectionMethod(filteredData),     [filteredData])
-  const detectionMethodData = useMemo(() => aggregateByDetectionMethodWithBest(filteredData), [filteredData])
-  const jurisdictionData    = useMemo(() => aggregateByJurisdiction(filteredData),        [filteredData])
-  const ageGroupData        = useMemo(() => aggregateByAgeGroup(filteredData),            [filteredData])
-  const arrestsByAge        = useMemo(() => ageGroupData.map(d => ({ jurisdiction: d.ageGroup, positives: d.arrests })).sort((a, b) => b.positives - a.positives), [ageGroupData])
-  const kpis                = useMemo(() => computeKPIs(filteredData),                    [filteredData])
+  // KPIs use fully filtered data
+  const kpis = useMemo(() => computeKPIs(filteredData), [filteredData])
+
+  // LineChart (age group trends): filter by year/month/stage but NOT ageGroup
+  // ageGroup only controls fading in the chart
+  // LineChart: filter by stage only. Year/month controls the visual "selected time" indicator,
+  // ageGroup controls line fading — neither affects the data.
+  const lineChartData = useMemo(() => {
+    let result = rawData
+    if (filters.stage) {
+      result = result.filter(d => d.DETECTION_METHOD === filters.stage)
+    }
+    return aggregateByMonthAndAgeGroup(result)
+  }, [rawData, filters.stage])
+
+  // DivergingBarChart (fines vs charges by age group): filter by year/month/stage but NOT ageGroup
+  const divergingData = useMemo(() => {
+    let result = rawData
+    if (filters.year !== null && filters.year !== undefined) {
+      result = result.filter(d => Number(d.YEAR) === filters.year)
+    }
+    if (filters.month !== null && filters.month !== undefined) {
+      result = result.filter(d => Number(d.MONTH) === filters.month)
+    }
+    if (filters.stage) {
+      result = result.filter(d => d.DETECTION_METHOD === filters.stage)
+    }
+    return aggregateByAgeGroup(result)
+  }, [rawData, filters.year, filters.month, filters.stage])
+
+  // StackedBarChart (detection methods): filter by year/month/ageGroup but NOT stage
+  const stackedData = useMemo(() => {
+    let result = rawData
+    if (filters.year !== null && filters.year !== undefined) {
+      result = result.filter(d => Number(d.YEAR) === filters.year)
+    }
+    if (filters.month !== null && filters.month !== undefined) {
+      result = result.filter(d => Number(d.MONTH) === filters.month)
+    }
+    if (filters.ageGroup) {
+      result = result.filter(d => d.AGE_GROUP === filters.ageGroup)
+    }
+    return aggregateByDetectionMethodWithBest(result)
+  }, [rawData, filters.year, filters.month, filters.ageGroup])
+
+  // DonutChart (drug types): use fully filtered data
+  const drugTypeData = useMemo(() => aggregateByDrugType(filteredData), [filteredData])
 
   const fmt = (n) => n.toLocaleString()
   const pct = kpis.positiveRate.toFixed(1) + '%'
@@ -45,13 +76,13 @@ function Age_Group2() {
   return (
     <Box sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
       <Typography variant="h2" sx={{ mb: 0.5, fontSize: { xs: '1.8rem', md: '2.2rem' } }}>
-        Drug Enforcement Dashboard
+        Age Group Analysis
       </Typography>
       <Typography variant="body2" sx={{ color: '#6B7280', mb: 3 }}>
         BITRE Australian roadside drug testing — 2023–2024
       </Typography>
 
-      <FilterBar />
+      <FilterBar visibleFilters={['year', 'month', 'ageGroup', 'stage']} />
 
       {/* Row 1: Trend chart (2fr) + right column (1fr) */}
       <Box
@@ -72,8 +103,8 @@ function Age_Group2() {
             <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mb: 2 }}>
               Monthly positive detections for each age group
             </Typography>
-            <LineChart data={monthlyAgeGroupData} onReset={resetFilters} />
-            {/* Inline KPI summary */}
+            <LineChart data={lineChartData} onReset={resetFilters} />
+            {/* Inline KPI summary
             <Box
               sx={{
                 display: 'grid',
@@ -100,7 +131,7 @@ function Age_Group2() {
                   {pct}
                 </Typography>
               </Box>
-            </Box>
+            </Box> */}
           </CardContent>
         </Card>
 
@@ -115,12 +146,10 @@ function Age_Group2() {
               <DonutChart data={drugTypeData} colors={DRUG_COLORS} title="Drug Types" />
             </CardContent>
           </Card>
-
-          
         </Box>
-      </Box> 
+      </Box>
 
-      {/* Row 2: Jurisdiction + Age Group */}
+      {/* Row 2: Diverging + Stacked */}
       <Box
         sx={{
           display: 'grid',
@@ -136,30 +165,30 @@ function Age_Group2() {
             <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mb: 2 }}>
               Comparative enforcement outcomes across demographics
             </Typography>
-            <DivergingBarChart data={ageGroupData} onReset={resetFilters} />
+            <DivergingBarChart data={divergingData} onReset={resetFilters} />
           </CardContent>
         </Card>
 
         <Card sx={{ minWidth: 0 }}>
           <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
             <Typography variant="h3" sx={{ fontSize: '1.1rem', mb: 0.25 }}>
-              Arrests by Age Group
+              Detection Methods
             </Typography>
             <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mb: 2 }}>
-              Number of arrests per age group
+              Best vs non-best detection by stage
             </Typography>
-            <StackedBarChart 
-              data={detectionMethodData} 
+            <StackedBarChart
+              data={stackedData}
               groupField="detectionMethod"
               stackFields={['best', 'notBest']}
               stackLabels={['Best Detection', 'Not Best']}
               colors={['#E99E1C', '#BF6BA1']}
-              onReset={resetFilters} 
+              onReset={resetFilters}
             />
           </CardContent>
         </Card>
       </Box>
-    </Box>   
+    </Box>
   )
 }
-export default Age_Group2
+export default AgeGroup

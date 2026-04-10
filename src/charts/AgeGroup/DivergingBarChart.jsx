@@ -1,7 +1,8 @@
-// src/charts/DivergingBarChart.jsx
+// src/charts/AgeGroup/DivergingBarChart.jsx
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
+import { useStore } from '../../store/useStore'
 
 const MARGIN = { top: 24, right: 24, bottom: 44, left: 80 }
 const COLORS = { fines: '#E99E1C', charges: '#61196E' }
@@ -10,7 +11,8 @@ const HEIGHT = 260
 
 /**
  * Diverging bar chart — fines (left) vs charges (right) by age group.
- * Fines extend to the left (negative), charges extend to the right (positive).
+ * Reads filters.ageGroup from store — fades non-selected age group rows.
+ * Click on a bar to toggle the ageGroup filter.
  *
  * @param {Array}    data    - [{ ageGroup, fines, charges }]
  * @param {function} onReset - called when "Reset filters" is clicked in empty state
@@ -19,6 +21,7 @@ function DivergingBarChart({ data = [], onReset }) {
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
+  const { filters, setFilter } = useStore()
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -40,6 +43,9 @@ function DivergingBarChart({ data = [], onReset }) {
     const innerH = HEIGHT - MARGIN.top - MARGIN.bottom
 
     const g = svg.append('g').attr('transform', `translate(${MARGIN.left},${MARGIN.top})`)
+
+    const selectedAgeGroup = filters.ageGroup
+    const hasAgeGroupFilter = selectedAgeGroup !== null
 
     const maxValue = d3.max(data, (d) => Math.max(d.fines, d.charges)) * 1.2
 
@@ -71,6 +77,12 @@ function DivergingBarChart({ data = [], onReset }) {
 
     const tooltipEl = d3.select(containerRef.current).select('.chart-tooltip')
 
+    // Helper: get opacity for a row
+    const getRowOpacity = (d) => {
+      if (!hasAgeGroupFilter) return 1
+      return d.ageGroup === selectedAgeGroup ? 1 : 0.15
+    }
+
     // Draw fines (left bars)
     g.selectAll('.bar-fines')
       .data(data)
@@ -81,9 +93,11 @@ function DivergingBarChart({ data = [], onReset }) {
       .attr('y', (d) => y(d.ageGroup))
       .attr('height', y.bandwidth())
       .attr('fill', COLORS.fines)
+      .attr('opacity', getRowOpacity)
       .attr('rx', 3)
+      .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget).attr('opacity', 0.8)
+        d3.select(event.currentTarget).attr('opacity', Math.min(1, getRowOpacity(d) + 0.2))
         tooltipEl.style('opacity', 1)
           .html(`<strong>${d.ageGroup}</strong><br/>${LABELS.fines}: <strong>${d.fines.toLocaleString()}</strong>`)
       })
@@ -91,9 +105,16 @@ function DivergingBarChart({ data = [], onReset }) {
         const [mx, my] = d3.pointer(event, containerRef.current)
         tooltipEl.style('left', `${mx + 12}px`).style('top', `${my - 40}px`)
       })
-      .on('mouseleave', (event) => {
-        d3.select(event.currentTarget).attr('opacity', 1)
+      .on('mouseleave', (event, d) => {
+        d3.select(event.currentTarget).attr('opacity', getRowOpacity(d))
         tooltipEl.style('opacity', 0)
+      })
+      .on('click', (event, d) => {
+        if (filters.ageGroup === d.ageGroup) {
+          setFilter('ageGroup', null)
+        } else {
+          setFilter('ageGroup', d.ageGroup)
+        }
       })
 
     // Draw charges (right bars)
@@ -106,9 +127,11 @@ function DivergingBarChart({ data = [], onReset }) {
       .attr('y', (d) => y(d.ageGroup))
       .attr('height', y.bandwidth())
       .attr('fill', COLORS.charges)
+      .attr('opacity', getRowOpacity)
       .attr('rx', 3)
+      .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget).attr('opacity', 0.8)
+        d3.select(event.currentTarget).attr('opacity', Math.min(1, getRowOpacity(d) + 0.2))
         tooltipEl.style('opacity', 1)
           .html(`<strong>${d.ageGroup}</strong><br/>${LABELS.charges}: <strong>${d.charges.toLocaleString()}</strong>`)
       })
@@ -116,20 +139,40 @@ function DivergingBarChart({ data = [], onReset }) {
         const [mx, my] = d3.pointer(event, containerRef.current)
         tooltipEl.style('left', `${mx + 12}px`).style('top', `${my - 40}px`)
       })
-      .on('mouseleave', (event) => {
-        d3.select(event.currentTarget).attr('opacity', 1)
+      .on('mouseleave', (event, d) => {
+        d3.select(event.currentTarget).attr('opacity', getRowOpacity(d))
         tooltipEl.style('opacity', 0)
       })
+      .on('click', (event, d) => {
+        if (filters.ageGroup === d.ageGroup) {
+          setFilter('ageGroup', null)
+        } else {
+          setFilter('ageGroup', d.ageGroup)
+        }
+      })
 
-    // Y axis (age groups)
-    g.append('g')
+    // Y axis (age groups) - with fading labels
+    const yAxisG = g.append('g')
       .call(d3.axisLeft(y).tickSize(0))
       .call((sel) => sel.select('.domain').remove())
-      .call((sel) =>
-        sel.selectAll('.tick text')
-          .style('font-size', '0.72rem').style('fill', '#6B7280')
-          .style('font-family', 'Inter, sans-serif')
-      )
+
+    yAxisG.selectAll('.tick text')
+      .style('font-size', '0.72rem').style('fill', '#6B7280')
+      .style('font-family', 'Inter, sans-serif')
+      .style('cursor', 'pointer')
+      .attr('opacity', function () {
+        if (!hasAgeGroupFilter) return 1
+        const label = d3.select(this).text()
+        return label === selectedAgeGroup ? 1 : 0.35
+      })
+      .on('click', function () {
+        const label = d3.select(this).text()
+        if (filters.ageGroup === label) {
+          setFilter('ageGroup', null)
+        } else {
+          setFilter('ageGroup', label)
+        }
+      })
 
     // X axis
     g.append('g')
@@ -159,7 +202,7 @@ function DivergingBarChart({ data = [], onReset }) {
     legend.append('text').attr('x', 84).attr('y', 9).text(LABELS.charges)
       .style('font-size', '0.68rem').style('fill', '#6B7280')
       .style('font-family', 'Inter, sans-serif')
-  }, [data, width])
+  }, [data, width, filters.ageGroup])
 
   if (!data || data.length === 0) {
     return (

@@ -1,12 +1,13 @@
 // src/pages/JurisdictionAnalysis.jsx
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Box, Paper, Typography, useMediaQuery } from '@mui/material'
+import * as d3 from 'd3'
 import { useStore } from '../store/useStore'
 import FilterBar from '../components/FilterBar'
-import LineBarChart from '../charts/LineBarChart'
-import HeatmapChart from '../charts/HeatmapChart'
-import RadarChart from '../charts/RadarChart'
-import SunburstChart from '../charts/SunburstChart'
+import LineBarChart from '../charts/Overview/LineBarChart'
+import HeatmapChart from '../charts/Overview/HeatmapChart'
+import RadarChart from '../charts/Overview/RadarChart'
+import SunburstChart from '../charts/Overview/SunburstChart'
 import {
   aggregateHeatmapData,
   aggregateRadarData,
@@ -42,6 +43,47 @@ function JurisdictionAnalysis() {
   const { rawData, filteredData, filters, resetFilters, setFilter } = useStore()
   const isWide = useMediaQuery('(min-width:1200px)')
 
+  // Load drug_statistics.csv specifically for correct KPI calculation
+  const [statsRawData, setStatsRawData] = useState([])
+  useEffect(() => {
+    d3.csv('/data/drug_statistics.csv').then(setStatsRawData)
+  }, [])
+
+  const statsKpis = useMemo(() => {
+    if (!statsRawData.length) return { totalTests: 0, positiveRate: 0, positives: 0 }
+
+    // 1. Filter by year, month, jurisdictions (but NOT stage yet, so we don't accidentally drop total tests)
+    let baseData = statsRawData
+    if (filters.year) baseData = baseData.filter(d => Number(d.YEAR) === filters.year)
+    if (filters.month) baseData = baseData.filter(d => Number(d.MONTH) === filters.month)
+    if (filters.jurisdictions && filters.jurisdictions.length > 0) {
+      baseData = baseData.filter(d => filters.jurisdictions.includes(d.JURISDICTION))
+    }
+
+    // 2. Compute total tests by deduplicating JURISDICTION-YEAR-MONTH 
+    //    because TESTS_CONDUCTED does not have detection methods breakdown.
+    const testsMap = new Map()
+    baseData.forEach(d => {
+      const key = `${d.JURISDICTION}-${d.YEAR}-${d.MONTH}`
+      if (!testsMap.has(key)) {
+        testsMap.set(key, Number(d.TESTS_CONDUCTED) || 0)
+      }
+    })
+    let totalTests = 0
+    testsMap.forEach(v => totalTests += v)
+
+    // 3. Compute positives (ignoring stage filter, calculated on all stages)
+    let positives = 0
+    baseData.forEach(d => {
+      if (d.DETECTION_METHOD !== 'Not applicable') {
+        positives += (Number(d.POSITIVE_RESULTS) || 0)
+      }
+    })
+
+    const positiveRate = totalTests > 0 ? (positives / totalTests) * 100 : 0
+    return { totalTests, positiveRate, positives }
+  }, [statsRawData, filters])
+
   const monthlyStats = useMemo(() => aggregateByMonth(filteredData), [filteredData])
   const kpis = useMemo(() => computeKPIs(filteredData), [filteredData])
   // Heatmap: filter by year, month & stage (so cell values update),
@@ -73,15 +115,14 @@ function JurisdictionAnalysis() {
     return result
   }, [rawData, filters.jurisdictions, filters.stage])
   const allMonthlyStats = useMemo(() => aggregateByMonth(lineBarFilteredData), [lineBarFilteredData])
-  const radarData    = aggregateRadarData(filteredData)
+  const radarData = aggregateRadarData(filteredData)
   const sunburstData = aggregateSunburstData(filteredData)
 
   const fmt = (n) => n.toLocaleString()
-  const pct = kpis.positiveRate.toFixed(1) + '%'
 
   return (
     <Box sx={{ px: 3, pt: 3, pb: 2 }}>
-      <FilterBar />
+      <FilterBar visibleFilters={['jurisdictions', 'year', 'month', 'stage']} />
 
       {/* Row 1: LineBarChart (left) + KPI Cards (right) */}
       <Box
@@ -103,6 +144,11 @@ function JurisdictionAnalysis() {
 
         {/* KPI Cards Column */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+          {filters.stage && (
+            <Typography variant="caption" sx={{ color: '#E99E1C', display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 500, backgroundColor: '#FFFBEB', width: 'fit-content', px: 1, py: 0.5, borderRadius: 1, border: '1px solid #FEF3C7' }}>
+              Note: Tests Conducted and Positive Results are calculated across all stages.
+            </Typography>
+          )}
           {/* Total Tests Card */}
           <Paper elevation={0} sx={{
             p: 2,
@@ -115,7 +161,7 @@ function JurisdictionAnalysis() {
               Tests Conducted
             </Typography>
             <Typography sx={{ fontFamily: '"DM Serif Display", serif', fontSize: '2rem', color: '#61196E', lineHeight: 1.1 }}>
-              {fmt(kpis.totalTests)}
+              {fmt(statsKpis.totalTests)}
             </Typography>
           </Paper>
 
@@ -131,7 +177,7 @@ function JurisdictionAnalysis() {
               Positive Results
             </Typography>
             <Typography sx={{ fontFamily: '"DM Serif Display", serif', fontSize: '2rem', color: '#E99E1C', lineHeight: 1.1 }}>
-              {pct}
+              {statsKpis.positiveRate.toFixed(1)}%
             </Typography>
           </Paper>
 
@@ -206,7 +252,7 @@ function JurisdictionAnalysis() {
         </Box>
 
         {/* Right: Heatmap */}
-        <Paper elevation={0} sx={{...CARD_SX, height: '420px'}}>
+        <Paper elevation={0} sx={{ ...CARD_SX, height: '420px' }}>
           <Typography sx={TITLE_SX}>Outcomes by Jurisdiction</Typography>
           <Box sx={{ flex: 1, minHeight: 0, width: '100%', height: 'calc(100% - 48px)' }}>
             <HeatmapChart data={heatmapData} />

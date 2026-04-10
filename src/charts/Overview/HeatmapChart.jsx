@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
-import { useStore } from '../store/useStore'
+import { useStore } from '../../store/useStore'
 
 const METRICS = ['Fines', 'Charges', 'Arrests']
 const DATA_KEY = { Fines: 'fines', Charges: 'charges', Arrests: 'arrests' }

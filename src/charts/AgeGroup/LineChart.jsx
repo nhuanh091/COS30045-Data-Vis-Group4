@@ -1,13 +1,16 @@
-// src/charts/LineChart.jsx
+// src/charts/AgeGroup/LineChart.jsx
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
+import { useStore } from '../../store/useStore'
 
 const MARGIN = { top: 20, right: 56, bottom: 44, left: 52 }
 const COLORS = ['#61196E', '#E99E1C', '#7658B2', '#BF6BA1', '#852501', '#A48ECA']
 
 /**
  * Line chart for age groups over time.
+ * Reads filters.ageGroup from store — fades non-selected age groups.
+ * Click on a legend item or line to toggle ageGroup filter.
  *
  * @param {Array}    data     - [{ month: "2023-01", "0-16": number, "17-25": number, ... }]
  * @param {function} onReset  - called when user clicks "Reset filters" in empty state
@@ -16,6 +19,7 @@ function LineChart({ data = [], onReset }) {
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
+  const { filters, setFilter } = useStore()
 
   const HEIGHT = 300
 
@@ -54,6 +58,9 @@ function LineChart({ data = [], onReset }) {
       return aMin - bMin
     })
 
+    const selectedAgeGroup = filters.ageGroup
+    const hasAgeGroupFilter = selectedAgeGroup !== null
+
     // Scales
     const x = d3.scaleBand()
       .domain(data.map((d) => d.month))
@@ -86,6 +93,10 @@ function LineChart({ data = [], onReset }) {
 
     // Draw lines and dots for each age group
     ageGroups.forEach((ag, i) => {
+      const isSelected = !hasAgeGroupFilter || ag === selectedAgeGroup
+      const lineOpacity = isSelected ? 1 : 0.12
+      const dotOpacity = isSelected ? 1 : 0.12
+
       const lineGen = d3
         .line()
         .x((d) => x(d.month) + x.bandwidth() / 2)
@@ -96,8 +107,17 @@ function LineChart({ data = [], onReset }) {
         .datum(data)
         .attr('fill', 'none')
         .attr('stroke', color(ag))
-        .attr('stroke-width', 2.5)
+        .attr('stroke-width', isSelected ? 3 : 2)
+        .attr('opacity', lineOpacity)
         .attr('d', lineGen)
+        .style('cursor', 'pointer')
+        .on('click', () => {
+          if (filters.ageGroup === ag) {
+            setFilter('ageGroup', null)
+          } else {
+            setFilter('ageGroup', ag)
+          }
+        })
 
       // Line dots
       g.selectAll(`.dot-${i}`)
@@ -106,10 +126,19 @@ function LineChart({ data = [], onReset }) {
         .attr('class', `dot-${i}`)
         .attr('cx', (d) => x(d.month) + x.bandwidth() / 2)
         .attr('cy', (d) => y(d[ag] || 0))
-        .attr('r', 3.5)
+        .attr('r', isSelected ? 3.5 : 2.5)
         .attr('fill', color(ag))
         .attr('stroke', '#fff')
         .attr('stroke-width', 1.5)
+        .attr('opacity', dotOpacity)
+        .style('cursor', 'pointer')
+        .on('click', () => {
+          if (filters.ageGroup === ag) {
+            setFilter('ageGroup', null)
+          } else {
+            setFilter('ageGroup', ag)
+          }
+        })
     })
 
     // X axis — show every other label when many months
@@ -147,26 +176,69 @@ function LineChart({ data = [], onReset }) {
           .style('font-family', 'Inter, sans-serif')
       )
 
-    // Legend
+    // Legend (clickable)
     const legend = g.append('g').attr('transform', `translate(0, -14)`)
     let legendX = 0
     ageGroups.forEach((ag) => {
-      legend.append('line')
-        .attr('x1', legendX).attr('x2', legendX + 16).attr('y1', 6).attr('y2', 6)
+      const isSelected = !hasAgeGroupFilter || ag === selectedAgeGroup
+      const legendOpacity = isSelected ? 1 : 0.3
+
+      const legendItem = legend.append('g')
+        .attr('transform', `translate(${legendX}, 0)`)
+        .style('cursor', 'pointer')
+        .attr('opacity', legendOpacity)
+        .on('click', () => {
+          if (filters.ageGroup === ag) {
+            setFilter('ageGroup', null)
+          } else {
+            setFilter('ageGroup', ag)
+          }
+        })
+
+      legendItem.append('line')
+        .attr('x1', 0).attr('x2', 16).attr('y1', 6).attr('y2', 6)
         .attr('stroke', color(ag)).attr('stroke-width', 2.5)
-      legend.append('circle')
-        .attr('cx', legendX + 8).attr('cy', 6).attr('r', 3.5)
+      legendItem.append('circle')
+        .attr('cx', 8).attr('cy', 6).attr('r', 3.5)
         .attr('fill', color(ag))
-      legend.append('text')
-        .attr('x', legendX + 20).attr('y', 10)
+      legendItem.append('text')
+        .attr('x', 20).attr('y', 10)
         .text(ag)
         .style('font-size', '0.68rem').style('fill', '#6B7280')
         .style('font-family', 'Inter, sans-serif')
-      legendX += 80 // adjust spacing based on text length if needed
+      legendX += 80
     })
 
     // Tooltip and hover interaction
     const tooltipEl = d3.select(containerRef.current).select('.chart-tooltip')
+
+    // Build the selected month key from filters
+    const selectedMonth = (filters.year !== null && filters.month !== null)
+      ? `${filters.year}-${String(filters.month).padStart(2, '0')}`
+      : null
+
+    // Draw persistent selection line for selected month
+    if (selectedMonth && data.some(d => d.month === selectedMonth)) {
+      g.append('rect')
+        .attr('class', 'selected-time-highlight')
+        .attr('x', x(selectedMonth))
+        .attr('width', x.bandwidth())
+        .attr('y', 0)
+        .attr('height', innerH)
+        .attr('fill', '#61196E')
+        .attr('opacity', 0.08)
+        .attr('rx', 3)
+
+      g.append('line')
+        .attr('class', 'selected-time-line')
+        .attr('x1', x(selectedMonth) + x.bandwidth() / 2)
+        .attr('x2', x(selectedMonth) + x.bandwidth() / 2)
+        .attr('y1', 0)
+        .attr('y2', innerH)
+        .attr('stroke', '#61196E')
+        .attr('stroke-width', 2.5)
+        .attr('opacity', 0.7)
+    }
 
     // Invisible rect for mouse events
     g.append('rect')
@@ -174,29 +246,29 @@ function LineChart({ data = [], onReset }) {
       .attr('height', innerH)
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
+      .style('cursor', 'pointer')
       .on('mousemove', function(event) {
         const [mx] = d3.pointer(event)
-        // Find closest data point
         const xPos = mx
         const bisect = d3.bisector(d => x(d.month) + x.bandwidth() / 2).left
         const index = bisect(data, xPos)
         const d = data[Math.max(0, Math.min(data.length - 1, index))]
 
-        // Remove previous hover line
         g.selectAll('.hover-line').remove()
 
-        // Draw vertical hover line
-        g.append('line')
-          .attr('class', 'hover-line')
-          .attr('x1', x(d.month) + x.bandwidth() / 2)
-          .attr('x2', x(d.month) + x.bandwidth() / 2)
-          .attr('y1', 0)
-          .attr('y2', innerH)
-          .attr('stroke', '#9CA3AF')
-          .attr('stroke-width', 1)
-          .attr('stroke-dasharray', '2,2')
+        // Only show hover line if it's not the selected month
+        if (d.month !== selectedMonth) {
+          g.append('line')
+            .attr('class', 'hover-line')
+            .attr('x1', x(d.month) + x.bandwidth() / 2)
+            .attr('x2', x(d.month) + x.bandwidth() / 2)
+            .attr('y1', 0)
+            .attr('y2', innerH)
+            .attr('stroke', '#9CA3AF')
+            .attr('stroke-width', 1)
+            .attr('stroke-dasharray', '2,2')
+        }
 
-        // Tooltip content
         const tooltipContent = `<strong>${d3.timeFormat('%B %Y')(new Date(d.month + '-01'))}</strong><br/>` +
           ageGroups.map(ag => `${ag}: <strong>${(d[ag] || 0).toLocaleString()}</strong>`).join('<br/>')
 
@@ -204,7 +276,6 @@ function LineChart({ data = [], onReset }) {
           .style('opacity', 1)
           .html(tooltipContent)
 
-        // Position tooltip
         const [mouseX, mouseY] = d3.pointer(event, containerRef.current)
         tooltipEl
           .style('left', `${mouseX + 12}px`)
@@ -214,7 +285,27 @@ function LineChart({ data = [], onReset }) {
         g.selectAll('.hover-line').remove()
         tooltipEl.style('opacity', 0)
       })
-  }, [data, width])
+      .on('click', function(event) {
+        const [mx] = d3.pointer(event)
+        const bisect = d3.bisector(d => x(d.month) + x.bandwidth() / 2).left
+        const index = bisect(data, mx)
+        const d = data[Math.max(0, Math.min(data.length - 1, index))]
+
+        if (d && d.month) {
+          const [year, month] = d.month.split('-').map(Number)
+          const clickedKey = `${year}-${String(month).padStart(2, '0')}`
+          if (selectedMonth === clickedKey) {
+            // Deselect
+            setFilter('year', null)
+            setFilter('month', null)
+          } else {
+            // Select
+            setFilter('year', year)
+            setFilter('month', month)
+          }
+        }
+      })
+  }, [data, width, filters.ageGroup, filters.year, filters.month])
 
   if (!data || data.length === 0) {
     return (

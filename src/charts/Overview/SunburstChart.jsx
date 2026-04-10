@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
-import { useStore } from '../store/useStore'
+import { useStore } from '../../store/useStore'
 
 const STAGE_COLORS = { 'Stage 1': '#61196E', 'Stage 2': '#A48ECA', 'Stage 3': '#E99E1C' }
 

@@ -4,15 +4,25 @@ import {
   Chip, Button, OutlinedInput,
 } from '@mui/material'
 import { useStore } from '../store/useStore'
-import { JURISDICTIONS_LIST, YEARS, MONTHS, STAGES } from '../data/mockData'
+import { JURISDICTIONS_LIST, YEARS, MONTHS, STAGES, AGE_GROUPS_LIST, LOCATIONS_LIST } from '../data/mockData'
 
-function FilterBar() {
+/**
+ * FilterBar — configurable filter bar.
+ * @param {string[]} visibleFilters - which filter controls to show.
+ *   Defaults to all: ['jurisdictions', 'year', 'month', 'stage', 'ageGroup']
+ */
+function FilterBar({ visibleFilters }) {
   const { filters, setFilter, resetFilters } = useStore()
+
+  // Default: show all filters
+  const show = (key) => !visibleFilters || visibleFilters.includes(key)
+
   const hasActiveFilters =
     filters.jurisdictions.length > 0 ||
     filters.year !== null ||
     filters.month !== null ||
-    filters.stage !== null
+    filters.stage !== null ||
+    filters.ageGroup !== null
 
   return (
     <Box
@@ -35,81 +45,129 @@ function FilterBar() {
       }}
     >
       {/* Jurisdiction multi-select */}
-      <FormControl size="small" sx={{ minWidth: 160 }}>
-        <InputLabel sx={{ fontSize: '0.8rem' }}>Jurisdiction</InputLabel>
-        <Select
-          multiple
-          value={filters.jurisdictions}
-          onChange={(e) => setFilter('jurisdictions', e.target.value)}
-          input={<OutlinedInput label="Jurisdiction" />}
-          renderValue={(selected) =>
-            selected.length === 0 ? 'All' : selected.join(', ')
-          }
-          sx={{ fontSize: '0.82rem' }}
-        >
-          {JURISDICTIONS_LIST.map((j) => (
-            <MenuItem key={j} value={j} sx={{ fontSize: '0.82rem' }}>
-              {j}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {show('jurisdictions') && (
+        <FormControl size="small" sx={{ minWidth: 160 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Jurisdiction</InputLabel>
+          <Select
+            multiple
+            value={filters.jurisdictions}
+            onChange={(e) => setFilter('jurisdictions', e.target.value)}
+            input={<OutlinedInput label="Jurisdiction" />}
+            renderValue={(selected) =>
+              selected.length === 0 ? 'All' : selected.join(', ')
+            }
+            sx={{ fontSize: '0.82rem' }}
+          >
+            {JURISDICTIONS_LIST.map((j) => (
+              <MenuItem key={j} value={j} sx={{ fontSize: '0.82rem' }}>
+                {j}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       {/* Year */}
-      <FormControl size="small" sx={{ minWidth: 100 }}>
-        <InputLabel sx={{ fontSize: '0.8rem' }}>Year</InputLabel>
-        <Select
-          value={filters.year ?? ''}
-          onChange={(e) =>
-            setFilter('year', e.target.value === '' ? null : e.target.value)
-          }
-          label="Year"
-          sx={{ fontSize: '0.82rem' }}
-        >
-          <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
-          {YEARS.map((y) => (
-            <MenuItem key={y} value={y} sx={{ fontSize: '0.82rem' }}>{y}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {show('year') && (
+        <FormControl size="small" sx={{ minWidth: 100 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Year</InputLabel>
+          <Select
+            value={filters.year ?? ''}
+            onChange={(e) =>
+              setFilter('year', e.target.value === '' ? null : e.target.value)
+            }
+            label="Year"
+            sx={{ fontSize: '0.82rem' }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
+            {YEARS.map((y) => (
+              <MenuItem key={y} value={y} sx={{ fontSize: '0.82rem' }}>{y}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       {/* Month */}
-      <FormControl size="small" sx={{ minWidth: 130 }}>
-        <InputLabel sx={{ fontSize: '0.8rem' }}>Month</InputLabel>
-        <Select
-          value={filters.month ?? ''}
-          onChange={(e) =>
-            setFilter('month', e.target.value === '' ? null : e.target.value)
-          }
-          label="Month"
-          sx={{ fontSize: '0.82rem' }}
-        >
-          <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
-          {MONTHS.map((m) => (
-            <MenuItem key={m.value} value={m.value} sx={{ fontSize: '0.82rem' }}>
-              {m.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {show('month') && (
+        <FormControl size="small" sx={{ minWidth: 130 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Month</InputLabel>
+          <Select
+            value={filters.month ?? ''}
+            onChange={(e) =>
+              setFilter('month', e.target.value === '' ? null : e.target.value)
+            }
+            label="Month"
+            sx={{ fontSize: '0.82rem' }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
+            {MONTHS.map((m) => (
+              <MenuItem key={m.value} value={m.value} sx={{ fontSize: '0.82rem' }}>
+                {m.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+
+      {/* Age Group */}
+      {show('ageGroup') && (
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Age Group</InputLabel>
+          <Select
+            value={filters.ageGroup ?? ''}
+            onChange={(e) =>
+              setFilter('ageGroup', e.target.value === '' ? null : e.target.value)
+            }
+            label="Age Group"
+            sx={{ fontSize: '0.82rem' }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
+            {AGE_GROUPS_LIST.map((ag) => (
+              <MenuItem key={ag} value={ag} sx={{ fontSize: '0.82rem' }}>{ag}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+
+      {/* Location Group */}
+      {show('locationGroup') && (
+        <FormControl size="small" sx={{ minWidth: 160 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Location</InputLabel>
+          <Select
+            value={filters.locationGroup ?? ''}
+            onChange={(e) =>
+              setFilter('locationGroup', e.target.value === '' ? null : e.target.value)
+            }
+            label="Location"
+            sx={{ fontSize: '0.82rem' }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
+            {LOCATIONS_LIST.map((loc) => (
+              <MenuItem key={loc} value={loc} sx={{ fontSize: '0.82rem' }}>{loc}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       {/* Testing Stage */}
-      <FormControl size="small" sx={{ minWidth: 120 }}>
-        <InputLabel sx={{ fontSize: '0.8rem' }}>Stage</InputLabel>
-        <Select
-          value={filters.stage ?? ''}
-          onChange={(e) =>
-            setFilter('stage', e.target.value === '' ? null : e.target.value)
-          }
-          label="Stage"
-          sx={{ fontSize: '0.82rem' }}
-        >
-          <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
-          {STAGES.map((s) => (
-            <MenuItem key={s} value={s} sx={{ fontSize: '0.82rem' }}>{s}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {show('stage') && (
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel sx={{ fontSize: '0.8rem' }}>Stage</InputLabel>
+          <Select
+            value={filters.stage ?? ''}
+            onChange={(e) =>
+              setFilter('stage', e.target.value === '' ? null : e.target.value)
+            }
+            label="Stage"
+            sx={{ fontSize: '0.82rem' }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.82rem' }}>All</MenuItem>
+            {STAGES.map((s) => (
+              <MenuItem key={s} value={s} sx={{ fontSize: '0.82rem' }}>{s}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       {/* Active filter chips — show user what's active */}
       {filters.jurisdictions.map((j) => (
@@ -139,6 +197,22 @@ function FilterBar() {
           label={MONTHS.find((m) => m.value === filters.month)?.label}
           size="small"
           onDelete={() => setFilter('month', null)}
+          sx={{ bgcolor: '#EDDDEC', color: '#61196E', fontWeight: 600 }}
+        />
+      )}
+      {filters.ageGroup && (
+        <Chip
+          label={`Age: ${filters.ageGroup}`}
+          size="small"
+          onDelete={() => setFilter('ageGroup', null)}
+          sx={{ bgcolor: '#EDDDEC', color: '#61196E', fontWeight: 600 }}
+        />
+      )}
+      {filters.locationGroup && (
+        <Chip
+          label={`Location: ${filters.locationGroup}`}
+          size="small"
+          onDelete={() => setFilter('locationGroup', null)}
           sx={{ bgcolor: '#EDDDEC', color: '#61196E', fontWeight: 600 }}
         />
       )}

@@ -103,3 +103,5 @@ export const MONTHS      = [
 ]
 export const JURISDICTIONS_LIST = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT']
 export const STAGES        = ['Stage 1', 'Stage 2', 'Stage 3']
+export const AGE_GROUPS_LIST = ['0-16', '17-25', '26-39', '40-64', '65+']
+export const LOCATIONS_LIST = ['Inner Regional Australia', 'Major Cities of Australia', 'Outer Regional Australia', 'Remote Australia', 'Very Remote Australia']

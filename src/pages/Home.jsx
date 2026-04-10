@@ -32,7 +32,7 @@ const dashboardCards = [
     icon: <BarChartRounded />,
     title: 'Overview',
     desc: 'Monthly testing trends, drug type distributions, and detection method breakdowns across all jurisdictions for 2023–2024.',
-    path: '/dashboard',
+    path: '/jurisdiction',
     accentColor: '#61196E',
     lightBg: '#F9F0FA',
   },
@@ -40,7 +40,7 @@ const dashboardCards = [
     icon: <PeopleRounded />,
     title: 'Age Group',
     desc: 'Enforcement outcomes broken down by age bracket — from under-16 to 65+ — showing which demographics have the highest positive detection rates.',
-    path: '/dashboard#age-group',
+    path: '/age-group',
     accentColor: '#7658B2',
     lightBg: '#F4F1FB',
   },
@@ -48,7 +48,7 @@ const dashboardCards = [
     icon: <MapRounded />,
     title: 'Location',
     desc: 'Positive drug tests per state and territory — compare how NSW, Victoria, Queensland, WA, and other jurisdictions measure up.',
-    path: '/dashboard#jurisdiction',
+    path: '/location',
     accentColor: '#E99E1C',
     lightBg: '#FEF8EC',
   },
@@ -90,7 +90,7 @@ const explorePages = [
     icon: <BarChartRounded />,
     title: 'Interactive Dashboard',
     desc: 'Filter by jurisdiction, year, month, and detection stage. Visualise trends, drug type distributions, and enforcement outcomes in real time.',
-    path: '/dashboard',
+    path: '/jurisdiction',
     gradient: 'linear-gradient(135deg, #61196E 0%, #7658B2 100%)',
   },
   {
@@ -237,10 +237,10 @@ function Home() {
           <Button
             variant="outlined"
             size="small"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/jurisdiction')}
             sx={{ borderColor: '#EDDDEC', color: '#61196E', fontWeight: 700, fontSize: '0.8rem', borderRadius: '10px', px: 2.5, whiteSpace: 'nowrap' }}
           >
-            View All →
+            Start Exploring →
           </Button>
         </Box>
 

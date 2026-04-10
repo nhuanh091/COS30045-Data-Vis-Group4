@@ -15,6 +15,7 @@ import LineChart from '../charts/AgeGroup/LineChart'
 import DonutChart from '../charts/AgeGroup/DonutChart'
 import DivergingBarChart from '../charts/AgeGroup/DivergingBarChart'
 import StackedBarChart from '../charts/AgeGroup/StackedBarChart'
+import InsightsBox from '../components/InsightsBox'
 
 const DRUG_COLORS = ['#61196E', '#E99E1C', '#7658B2', '#BF6BA1', '#852501', '#A48ECA', '#D1D5DB']
 
@@ -188,6 +189,22 @@ function AgeGroup() {
           </CardContent>
         </Card>
       </Box>
+
+      {/* Insights Section */}
+      <InsightsBox insights={[
+        {
+          title: 'High-Risk Demographics',
+          description: 'The 17-25 and 26-39 age brackets represent the highest frequency of positive detections. This highlights a critical demographic that should be the primary focus for targeted road safety and educational campaigns.'
+        },
+        {
+          title: 'Severity Varies by Age',
+          description: 'While Fines are universally higher than formal charges across all ages, older demographics (e.g., 40-64) see a slightly higher proportion of charges compared to younger drivers, which may indicate issues with compounding offenses or harsher policing for repeat infractions.'
+        },
+        {
+          title: 'Testing Stage Efficiency',
+          description: 'Oral fluid tests (Stage 1) make up the overwhelming majority of initial detection methods. These tests remain highly correlated with positive confirmatory laboratory analysis (Stage 3), underscoring the reliability of roadside tools.'
+        }
+      ]} />
     </Box>
   )
 }

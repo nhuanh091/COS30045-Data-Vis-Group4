@@ -8,6 +8,7 @@ import LineBarChart from '../charts/Overview/LineBarChart'
 import HeatmapChart from '../charts/Overview/HeatmapChart'
 import RadarChart from '../charts/Overview/RadarChart'
 import SunburstChart from '../charts/Overview/SunburstChart'
+import InsightsBox from '../components/InsightsBox'
 import {
   aggregateHeatmapData,
   aggregateRadarData,
@@ -259,6 +260,22 @@ function JurisdictionAnalysis() {
           </Box>
         </Paper>
       </Box>
+
+      {/* Insights Section */}
+      <InsightsBox insights={[
+        {
+          title: 'Testing Volume Correlates with Positives',
+          description: 'NSW and VIC consistently carry out the highest volume of roadside tests. Consequently, they report the largest absolute numbers of positive drug tests, indicating that higher enforcement frequency directly scales with positive detection numbers.'
+        },
+        {
+          title: 'Cannabis is the Predominant Drug',
+          description: 'Regardless of the jurisdiction, Cannabis vastly exceeds other detected drugs like Amphetamines or Cocaine, suggesting a systemic trend un-isolated from geographical boundaries.'
+        },
+        {
+          title: 'Fines Over Charges',
+          description: 'Enforcement generally heavily leans towards issuing Fines rather than progressing to Arrests or formal Charges. This highlights the penalty-first approach of standard roadside detection unless aggravating factors are present.'
+        }
+      ]} />
     </Box>
   )
 }

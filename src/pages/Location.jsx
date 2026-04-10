@@ -19,6 +19,7 @@ import LineChart from '../charts/Location/LineChart'
 import DonutChart from '../charts/AgeGroup/DonutChart'
 import DivergingBarChart from '../charts/Location/DivergingBarChart'
 import StackedBarChart from '../charts/AgeGroup/StackedBarChart'
+import InsightsBox from '../components/InsightsBox'
 
 const DRUG_COLORS = ['#61196E', '#E99E1C', '#7658B2', '#BF6BA1', '#852501', '#A48ECA', '#D1D5DB']
 
@@ -189,6 +190,22 @@ function Location() {
           </CardContent>
         </Card>
       </Box>
+
+      {/* Insights Section */}
+      <InsightsBox insights={[
+        {
+          title: 'Metropolitan Area Volume',
+          description: 'Major Cities of Australia consistently report the highest absolute number of positive tests. This is directly tied to the higher traffic volumes and heavier saturation of police testing checkpoints in urban environments.'
+        },
+        {
+          title: 'Regional Testing Disparities',
+          description: 'While Inner Regional and Outer Regional areas produce lower absolute positive numbers, they frequently experience a high positive testing rate relative to their population size. This suggests persistent and challenging issues regarding road safety and impaired driving in rural environments.'
+        },
+        {
+          title: 'Uniform Drug Profiles',
+          description: 'Despite geographic distancing, the core drug profile remains essentially identical across all territories. Cannabis followed by Amphetamine maintains staggering dominance everywhere, debunking notions that synthetic drugs might be fundamentally skewed towards rural vs urban divides.'
+        }
+      ]} />
     </Box>
   )
 }

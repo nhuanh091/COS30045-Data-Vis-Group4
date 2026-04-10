@@ -56,18 +56,21 @@ function RadarChart({ data = {} }) {
     // Build datasets
     let datasets
     if (selectedJurs && selectedJurs.length > 0) {
+      // Filter mode: show only selected jurisdictions
       datasets = selectedJurs.map((j, i) => ({
         label: j,
         values: data[j],
         color: JUR_COLORS[JURISDICTIONS_LIST.indexOf(j) % JUR_COLORS.length],
       }))
     } else {
-      // Aggregate all jurisdictions into one polygon
-      const agg = { amphetamine: 0, cannabis: 0, cocaine: 0, ecstasy: 0, methylamphetamine: 0, other: 0 }
-      Object.values(data).forEach((jur) => {
-        Object.keys(agg).forEach((k) => { agg[k] += jur[k] || 0 })
-      })
-      datasets = [{ label: 'All', values: agg, color: '#61196E' }]
+      // Original view: show all jurisdictions overlaid
+      datasets = JURISDICTIONS_LIST
+        .filter((j) => data[j])
+        .map((j, i) => ({
+          label: j,
+          values: data[j],
+          color: JUR_COLORS[i % JUR_COLORS.length],
+        }))
     }
 
     const maxVal = d3.max(

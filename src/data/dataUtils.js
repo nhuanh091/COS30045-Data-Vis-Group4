@@ -280,3 +280,40 @@ export function aggregateSunburstData(data) {
 
   return { name: 'root', children }
 }
+
+/**
+ * Aggregate monthly tests and positive results for LineBarChart.
+ * Returns [{ month: "2023-01", totalTests: number, positives: number }] sorted chronologically.
+ */
+export function aggregateMonthlyStatistics(data) {
+  const map = {}
+  data.forEach((row) => {
+    const monthKey = `${row.YEAR}-${String(row.MONTH).padStart(2, '0')}`
+    if (!map[monthKey]) {
+      map[monthKey] = { month: monthKey, totalTests: 0, positives: 0, fines: 0, arrests: 0, charges: 0 }
+    }
+    map[monthKey].totalTests  += (Number(row.TESTS_CONDUCTED) || 0)
+    map[monthKey].positives   += (Number(row.POSITIVE_RESULTS) || 0)
+    map[monthKey].fines       += (Number(row.FINES) || 0)
+    map[monthKey].arrests     += (Number(row.ARRESTS) || 0)
+    map[monthKey].charges     += (Number(row.CHARGES) || 0)
+  })
+  return Object.values(map).sort((a, b) => a.month.localeCompare(b.month))
+}
+
+/**
+ * Compute KPI values from drug statistics data.
+ * Returns { totalTests, positiveTests, positiveRate, fines, arrests, charges }
+ */
+export function computeStatisticsKPIs(data) {
+  let totalTests = 0, positiveTests = 0, fines = 0, arrests = 0, charges = 0
+  data.forEach((row) => {
+    totalTests     += (Number(row.TESTS_CONDUCTED) || 0)
+    positiveTests  += (Number(row.POSITIVE_RESULTS) || 0)
+    fines          += (Number(row.FINES) || 0)
+    arrests        += (Number(row.ARRESTS) || 0)
+    charges        += (Number(row.CHARGES) || 0)
+  })
+  const positiveRate = totalTests > 0 ? (positiveTests / totalTests) * 100 : 0
+  return { totalTests, positiveTests, positiveRate, fines, arrests, charges }
+}

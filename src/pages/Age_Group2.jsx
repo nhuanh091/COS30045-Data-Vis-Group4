@@ -116,15 +116,7 @@ function Age_Group2() {
             </CardContent>
           </Card>
 
-          {/* Detection method donut */}
-          <Card>
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-              <Typography variant="h3" sx={{ fontSize: '0.9rem', mb: 1.5 }}>
-                Detection Methods
-              </Typography>
-              <DonutChart data={detectionData} colors={STAGE_COLORS} title="Detection" />
-            </CardContent>
-          </Card>
+          
         </Box>
       </Box> 
 
@@ -167,34 +159,7 @@ function Age_Group2() {
           </CardContent>
         </Card>
       </Box>
-
-      {/* Row 3: Detection Methods Stacked */}
-      <Box sx={{ mt: 2 }}>
-        <Card sx={{ minWidth: 0 }}>
-          <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-            <Typography variant="h3" sx={{ fontSize: '1.1rem', mb: 0.25 }}>
-              Detection Methods
-            </Typography>
-            <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mb: 2 }}>
-              Tests by detection method and whether they were best detection
-            </Typography>
-            <StackedBarChart 
-              data={detectionMethodData} 
-              groupField="detectionMethod"
-              stackFields={['best', 'notBest']}
-              stackLabels={['Best Detection', 'Not Best']}
-              colors={['#E99E1C', '#BF6BA1']}
-              onReset={resetFilters} 
-            />
-          </CardContent>
-        </Card>
-      </Box>
-    </Box>
-
-    
-
-    
+    </Box>   
   )
 }
-
 export default Age_Group2

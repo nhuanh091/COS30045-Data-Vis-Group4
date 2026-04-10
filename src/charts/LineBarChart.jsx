@@ -1,17 +1,31 @@
 // src/charts/LineBarChart.jsx
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import { Box, Typography } from '@mui/material'
+import { aggregateMonthlyStatistics } from '../data/dataUtils'
+import { useStore } from '../store/useStore'
 
 const MARGIN = { top: 20, right: 56, bottom: 44, left: 52 }
 
 /**
  * Combo chart: bars = monthly positive drug tests, line = total tests.
+ * Can work with pre-aggregated data or raw data (auto-aggregates if rawData provided).
+ * Supports click interaction to filter by month/year.
  *
- * @param {Array}    data     - [{ month: "2023-01", totalTests: number, positives: number }]
+ * @param {Array}    data     - [{ month: "2023-01", totalTests: number, positives: number }] (pre-aggregated)
+ * @param {Array}    rawData  - raw drug statistics rows with YEAR, MONTH, TESTS_CONDUCTED, POSITIVE_RESULTS, etc.
  * @param {function} onReset  - called when user clicks "Reset filters" in empty state
+ * @param {function} onMonthClick - called when user clicks a bar with { year, month } (month is 1-indexed)
  */
-function LineBarChart({ data = [], onReset }) {
+function LineBarChart({ data = [], rawData = [], onReset }) {
+  const { filters, setFilter } = useStore()
+  // Aggregate raw data if provided, otherwise use pre-aggregated data
+  const chartData = useMemo(() => {
+    if (rawData && rawData.length > 0) {
+      return aggregateMonthlyStatistics(rawData)
+    }
+    return data
+  }, [rawData, data])
   const containerRef = useRef(null)
   const svgRef = useRef(null)
   const [width, setWidth] = useState(0)
@@ -29,7 +43,7 @@ function LineBarChart({ data = [], onReset }) {
   }, [])
 
   useEffect(() => {
-    if (!data || data.length === 0 || width === 0) return
+    if (!chartData || chartData.length === 0 || width === 0) return
 
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
@@ -45,17 +59,17 @@ function LineBarChart({ data = [], onReset }) {
 
     // Scales
     const x = d3.scaleBand()
-      .domain(data.map((d) => d.month))
+      .domain(chartData.map((d) => d.month))
       .range([0, innerW])
       .padding(0.35)
 
     const yBar = d3.scaleLinear()
-      .domain([0, d3.max(data, (d) => d.positives) * 1.2])
+      .domain([0, d3.max(chartData, (d) => d.positives) * 1.2])
       .nice()
       .range([innerH, 0])
 
     const yLine = d3.scaleLinear()
-      .domain([0, d3.max(data, (d) => d.totalTests) * 1.2])
+      .domain([0, d3.max(chartData, (d) => d.totalTests) * 1.2])
       .nice()
       .range([innerH, 0])
 
@@ -77,7 +91,7 @@ function LineBarChart({ data = [], onReset }) {
     // Bars
     const bars = g
       .selectAll('.bar')
-      .data(data)
+      .data(chartData)
       .join('rect')
       .attr('class', 'bar')
       .attr('x', (d) => x(d.month))
@@ -85,8 +99,14 @@ function LineBarChart({ data = [], onReset }) {
       .attr('y', innerH)
       .attr('height', 0)
       .attr('fill', '#61196E')
-      .attr('opacity', 0.72)
+      .attr('opacity', (d) => {
+        const hasMonthFilter = filters.year !== null && filters.month !== null
+        if (!hasMonthFilter) return 0.72
+        const filterKey = `${filters.year}-${String(filters.month).padStart(2, '0')}`
+        return d.month === filterKey ? 1 : 0.15
+      })
       .attr('rx', 3)
+      .style('cursor', 'pointer')
 
     bars
       .transition()
@@ -102,15 +122,16 @@ function LineBarChart({ data = [], onReset }) {
       .curve(d3.curveMonotoneX)
 
     g.append('path')
-      .datum(data)
+      .datum(chartData)
       .attr('fill', 'none')
       .attr('stroke', '#E99E1C')
       .attr('stroke-width', 2.5)
+      .attr('opacity', (filters.year !== null && filters.month !== null) ? 0.2 : 1)
       .attr('d', lineGen)
 
     // Line dots
     g.selectAll('.dot')
-      .data(data)
+      .data(chartData)
       .join('circle')
       .attr('class', 'dot')
       .attr('cx', (d) => x(d.month) + x.bandwidth() / 2)
@@ -119,14 +140,20 @@ function LineBarChart({ data = [], onReset }) {
       .attr('fill', '#E99E1C')
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
+      .attr('opacity', (d) => {
+        const hasMonthFilter = filters.year !== null && filters.month !== null
+        if (!hasMonthFilter) return 1
+        const filterKey = `${filters.year}-${String(filters.month).padStart(2, '0')}`
+        return d.month === filterKey ? 1 : 0.15
+      })
 
     // X axis — show every other label when many months
-    const tickEvery = data.length > 12 ? 2 : 1
+    const tickEvery = chartData.length > 12 ? 2 : 1
     g.append('g')
       .attr('transform', `translate(0,${innerH})`)
       .call(
         d3.axisBottom(x)
-          .tickValues(data.filter((_, i) => i % tickEvery === 0).map((d) => d.month))
+          .tickValues(chartData.filter((_, i) => i % tickEvery === 0).map((d) => d.month))
           .tickFormat((d) => d3.timeFormat('%b %y')(new Date(d + '-01')))
           .tickSize(0)
       )
@@ -216,13 +243,37 @@ function LineBarChart({ data = [], onReset }) {
         const [mx, my] = d3.pointer(event, containerRef.current)
         tooltipEl.style('left', `${mx + 12}px`).style('top', `${my - 60}px`)
       })
-      .on('mouseleave', (event) => {
-        d3.select(event.currentTarget).attr('opacity', 0.72)
+      .on('mouseleave', (event, d) => {
+        const hasMonthFilter = filters.year !== null && filters.month !== null
+        let baseOpacity = 0.72
+        if (hasMonthFilter) {
+          const filterKey = `${filters.year}-${String(filters.month).padStart(2, '0')}`
+          baseOpacity = d.month === filterKey ? 1 : 0.15
+        }
+        d3.select(event.currentTarget).attr('opacity', baseOpacity)
         tooltipEl.style('opacity', 0)
       })
-  }, [data, width])
+      .on('click', (event, d) => {
+        if (d.month) {
+          const [year, month] = d.month.split('-').map(Number)
+          const filterKey = `${year}-${String(month).padStart(2, '0')}`
+          const currentKey = (filters.year !== null && filters.month !== null)
+            ? `${filters.year}-${String(filters.month).padStart(2, '0')}`
+            : null
+          if (currentKey === filterKey) {
+            // Deselect: clear month/year filters
+            setFilter('year', null)
+            setFilter('month', null)
+          } else {
+            // Select this month
+            setFilter('year', year)
+            setFilter('month', month)
+          }
+        }
+      })
+  }, [chartData, width, filters.year, filters.month])
 
-  if (!data || data.length === 0) {
+  if (!chartData || chartData.length === 0) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: HEIGHT }}>
         <Typography sx={{ color: '#9CA3AF', fontSize: '0.85rem', fontFamily: 'Inter, sans-serif' }}>

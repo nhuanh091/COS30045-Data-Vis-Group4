@@ -1,10 +1,7 @@
 // src/store/useStore.js
 import { create } from 'zustand'
 import * as d3 from 'd3'
-// import { mockData } from '../data/mockData'
 import { applyFilters } from '../data/dataUtils'
-
-const initialData = await d3.csv("/data/positive_drug_cleaned.csv")
 
 const defaultFilters = {
   jurisdictions: [],   // string[] — e.g. ['NSW', 'VIC']
@@ -21,11 +18,18 @@ export const useStore = create((set, get) => ({
   setUser: (user) => set({ user }),
 
   // Data slices
-  rawData: initialData,
+  rawData: [],
   filters: { ...defaultFilters },
-  filteredData: initialData,
+  filteredData: [],
+  dataLoaded: false,
 
-  // Called once mockData is loaded (see Dashboard.jsx Task 15)
+  // Load CSV data — call once at app startup
+  loadData: async () => {
+    if (get().dataLoaded) return
+    const data = await d3.csv("/data/positive_drug_cleaned.csv")
+    set({ rawData: data, filteredData: data, dataLoaded: true })
+  },
+
   setRawData: (data) =>
     set({ rawData: data, filteredData: data, filters: { ...defaultFilters } }),
 

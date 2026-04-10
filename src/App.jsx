@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -6,8 +7,12 @@ import Insights from './pages/Insights'
 import AgeGroup from './pages/AgeGroup'
 import Location from './pages/Location'
 import JurisdictionAnalysis from './pages/JurisdictionAnalysis'
+import { useStore } from './store/useStore'
 
 function App() {
+  const loadData = useStore((s) => s.loadData)
+  useEffect(() => { loadData() }, [loadData])
+
   return (
     <Layout>
       <Routes>
